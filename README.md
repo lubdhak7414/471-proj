@@ -1,7 +1,6 @@
 ### Project Name: Repair Portal
 
 This project aims to deliver the following features:
-
 Module 01: Core Platform Functionality
 This module establishes the essential features for the marketplace to function at a basic level, allowing users to register, find technicians, and book a service.
 
