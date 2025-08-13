@@ -5,6 +5,11 @@ import {
     updateBooking,
     deleteBooking,
     getAllBookings,
+    cancelBooking,
+    rescheduleBooking,
+    getBookingHistory,
+    getUserCancellableBookings,
+    bulkCancelBookings
 } from "../controllers/booking.controller.js";
 
 const router = express.Router();
@@ -28,5 +33,11 @@ router.delete("/:id", deleteBooking);
 // @route   GET /api/bookings
 // @desc    Get all bookings
 router.get("/", getAllBookings);
+
+router.put('/cancel/:id', cancelBooking);
+router.put('/reschedule/:id', rescheduleBooking);
+router.get('/history/:id', getBookingHistory);
+router.get('/user/:userId/cancellable', getUserCancellableBookings);
+router.put('/bulk-cancel', bulkCancelBookings);
 
 export default router;

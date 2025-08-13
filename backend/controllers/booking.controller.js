@@ -106,3 +106,237 @@ export const getAllBookings = async (req, res) => {
         res.status(500).json({ message: "Server Error" });
     }
 };
+
+// Cancel booking
+export const cancelBooking = async (req, res) => {
+    try {
+        const { id } = req.params;
+        const { cancellationReason } = req.body;
+
+        // Find the booking
+        const booking = await Booking.findById(id);
+        if (!booking) {
+            return res.status(404).json({ message: "Booking not found" });
+        }
+
+        // Check if booking can be cancelled
+        if (booking.status === "completed") {
+            return res.status(400).json({ 
+                message: "Cannot cancel a completed booking" 
+            });
+        }
+
+        if (booking.status === "cancelled") {
+            return res.status(400).json({ 
+                message: "Booking is already cancelled" 
+            });
+        }
+
+        // Update booking status to cancelled
+        const cancelledBooking = await Booking.findByIdAndUpdate(
+            id,
+            {
+                status: "cancelled",
+                cancellationReason: cancellationReason || "Cancelled by user",
+                cancelledAt: new Date()
+            },
+            { new: true }
+        ).populate("user").populate("technician").populate("service");
+
+        res.status(200).json({
+            message: "Booking cancelled successfully",
+            booking: cancelledBooking
+        });
+
+    } catch (error) {
+        console.error("Cancel Booking Error:", error);
+        res.status(500).json({ message: "Server Error" });
+    }
+};
+
+// Reschedule booking
+export const rescheduleBooking = async (req, res) => {
+    try {
+        const { id } = req.params;
+        const { preferredDate, preferredTime, rescheduleReason } = req.body;
+
+        // Validate required fields
+        if (!preferredDate || !preferredTime) {
+            return res.status(400).json({ 
+                message: "Preferred date and time are required for rescheduling" 
+            });
+        }
+
+        // Find the booking
+        const booking = await Booking.findById(id);
+        if (!booking) {
+            return res.status(404).json({ message: "Booking not found" });
+        }
+
+        // Check if booking can be rescheduled
+        if (booking.status === "completed") {
+            return res.status(400).json({ 
+                message: "Cannot reschedule a completed booking" 
+            });
+        }
+
+        if (booking.status === "cancelled") {
+            return res.status(400).json({ 
+                message: "Cannot reschedule a cancelled booking" 
+            });
+        }
+
+        // Validate new date is in the future
+        const newDate = new Date(preferredDate);
+        const currentDate = new Date();
+        if (newDate <= currentDate) {
+            return res.status(400).json({ 
+                message: "New preferred date must be in the future" 
+            });
+        }
+
+        // Store old scheduling info for reference
+        const oldPreferredDate = booking.preferredDate;
+        const oldPreferredTime = booking.preferredTime;
+
+        // Update booking with new schedule
+        const rescheduledBooking = await Booking.findByIdAndUpdate(
+            id,
+            {
+                preferredDate: newDate,
+                preferredTime,
+                status: booking.status === "accepted" ? "pending" : booking.status, // Reset to pending if it was accepted
+                $push: {
+                    rescheduleHistory: {
+                        oldDate: oldPreferredDate,
+                        oldTime: oldPreferredTime,
+                        newDate: newDate,
+                        newTime: preferredTime,
+                        reason: rescheduleReason || "Rescheduled by user",
+                        rescheduledAt: new Date()
+                    }
+                }
+            },
+            { new: true }
+        ).populate("user").populate("technician").populate("service");
+
+        res.status(200).json({
+            message: "Booking rescheduled successfully",
+            booking: rescheduledBooking
+        });
+
+    } catch (error) {
+        console.error("Reschedule Booking Error:", error);
+        res.status(500).json({ message: "Server Error" });
+    }
+};
+
+// Get booking cancellation/reschedule history
+export const getBookingHistory = async (req, res) => {
+    try {
+        const { id } = req.params;
+
+        const booking = await Booking.findById(id)
+            .populate("user", "name email phone")
+            .populate("technician")
+            .populate("service", "name category");
+
+        if (!booking) {
+            return res.status(404).json({ message: "Booking not found" });
+        }
+
+        const history = {
+            bookingId: booking._id,
+            currentStatus: booking.status,
+            createdAt: booking.createdAt,
+            updatedAt: booking.updatedAt,
+            cancellation: booking.status === "cancelled" ? {
+                cancelledAt: booking.cancelledAt,
+                reason: booking.cancellationReason
+            } : null,
+            rescheduleHistory: booking.rescheduleHistory || [],
+            completion: booking.status === "completed" ? {
+                completedAt: booking.completedAt
+            } : null
+        };
+
+        res.status(200).json(history);
+
+    } catch (error) {
+        console.error("Get Booking History Error:", error);
+        res.status(500).json({ message: "Server Error" });
+    }
+};
+
+// Get user's cancellable bookings
+export const getUserCancellableBookings = async (req, res) => {
+    try {
+        const { userId } = req.params;
+
+        const cancellableBookings = await Booking.find({
+            user: userId,
+            status: { $nin: ["completed", "cancelled"] }
+        })
+        .populate("technician", "user rating")
+        .populate("service", "name category estimatedPrice")
+        .sort({ createdAt: -1 });
+
+        res.status(200).json({
+            message: "Cancellable bookings retrieved successfully",
+            count: cancellableBookings.length,
+            bookings: cancellableBookings
+        });
+
+    } catch (error) {
+        console.error("Get Cancellable Bookings Error:", error);
+        res.status(500).json({ message: "Server Error" });
+    }
+};
+
+// Bulk cancel bookings (admin feature)
+export const bulkCancelBookings = async (req, res) => {
+    try {
+        const { bookingIds, reason } = req.body;
+
+        if (!Array.isArray(bookingIds) || bookingIds.length === 0) {
+            return res.status(400).json({ 
+                message: "Booking IDs array is required and cannot be empty" 
+            });
+        }
+
+        // Find bookings that can be cancelled
+        const bookings = await Booking.find({
+            _id: { $in: bookingIds },
+            status: { $nin: ["completed", "cancelled"] }
+        });
+
+        if (bookings.length === 0) {
+            return res.status(400).json({ 
+                message: "No cancellable bookings found" 
+            });
+        }
+
+        // Bulk update
+        const result = await Booking.updateMany(
+            {
+                _id: { $in: bookings.map(b => b._id) },
+                status: { $nin: ["completed", "cancelled"] }
+            },
+            {
+                status: "cancelled",
+                cancellationReason: reason || "Bulk cancellation",
+                cancelledAt: new Date()
+            }
+        );
+
+        res.status(200).json({
+            message: `${result.modifiedCount} bookings cancelled successfully`,
+            cancelledCount: result.modifiedCount,
+            requestedCount: bookingIds.length
+        });
+
+    } catch (error) {
+        console.error("Bulk Cancel Bookings Error:", error);
+        res.status(500).json({ message: "Server Error" });
+    }
+};
