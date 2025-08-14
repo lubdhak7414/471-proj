@@ -1,5 +1,6 @@
 import React, { useState, useEffect } from 'react';
 import Navbar from './sections/navbar'; // Assuming you already have a Navbar
+import Footer from './sections/Footer'; // Assuming you have a Footer component
 import { Input } from '@/components/ui/input';
 import { Button } from '@/components/ui/button';
 import { Card, CardContent, CardDescription, CardFooter, CardHeader, CardTitle } from '@/components/ui/card';
@@ -83,7 +84,7 @@ export function ServiceBooking() {
   };
 
   return (
-    <div className="min-h-screen bg-background text-foreground font-inter">
+    <div className="text-foreground font-inter">
       <Navbar />
       <div className="w-full max-w-7xl mx-auto py-8 p-4 sm:p-6 lg:p-8">
         <h1 className="text-3xl sm:text-4xl lg:text-5xl font-bold text-center mb-6">
@@ -108,7 +109,7 @@ export function ServiceBooking() {
                     id="service"
                     value={selectedService}
                     onChange={(e) => setSelectedService(e.target.value)}
-                    className="border p-2 rounded-md bg-gray-800 text-white focus:ring-2 focus:ring-blue-500"
+                    className="border p-2 rounded-md bg-gray-900 text-white focus:ring-2 focus:ring-blue-500"
                     required
                   >
                     <option value="" disabled>Select a Service</option>
@@ -163,7 +164,7 @@ export function ServiceBooking() {
                     id="urgency"
                     value={urgency}
                     onChange={(e) => setUrgency(e.target.value)}
-                    className="border p-2 rounded-md bg-gray-800 text-white focus:ring-2 focus:ring-blue-500"
+                    className="border p-2 rounded-md bg-gray-900 text-white focus:ring-2 focus:ring-blue-500"
                     required
                   >
                     <option value="" disabled>Select Urgency Level</option>
@@ -221,6 +222,7 @@ export function ServiceBooking() {
           </CardContent>
         </Card>
       </div>
+      <Footer />
     </div>
   );
 }

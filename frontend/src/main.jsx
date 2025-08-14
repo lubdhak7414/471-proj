@@ -9,6 +9,7 @@ import { ServiceBooking } from './ServiceBooking.jsx';
 import { AuthProvider } from './context/AuthContext';
 import ProtectedRoutes from './context/ProtectedRoutes.jsx'; // Make sure the path is correct
 import './index.css';
+import Layout from './Layout.jsx'; //
 
 // Define your routes
 const router = createBrowserRouter([
@@ -41,7 +42,9 @@ const router = createBrowserRouter([
 ReactDOM.createRoot(document.getElementById('root')).render(
   <React.StrictMode>
     <AuthProvider>
-      <RouterProvider router={router} />
+      <Layout>
+        <RouterProvider router={router} />
+      </Layout>
     </AuthProvider>
   </React.StrictMode>
 );

@@ -94,8 +94,8 @@ const Navbar = () => {
     <div>
       <header
         className={cn(
-          'sticky top-0 z-50 w-full transition-all duration-300',
-          isScrolled ? 'backdrop-blur-xl bg-background/80 shadow-lg' : 'bg-transparent'
+          'sticky top-0 z-50 w-full transition-all duration-0',
+          isScrolled ? 'bg-transparent' : 'bg-transparent'
         )}
       >
         <div className="container mx-auto flex h-16 items-center justify-between px-4">
@@ -224,7 +224,7 @@ const Navbar = () => {
           onClick={handleOverlayClick}
         >
           <div
-            className="rounded-lg p-6 w-full max-w-md bg-background"
+            
             onClick={(e) => e.stopPropagation()}
           >
             {activePanel === 'login' && (
