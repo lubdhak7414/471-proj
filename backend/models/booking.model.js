@@ -43,10 +43,8 @@ const bookingSchema = new mongoose.Schema(
             default: "pending",
         },
         address: {
-            street: { type: String, required: true },
-            city: { type: String, required: true },
-            area: { type: String, required: true },
-            postalCode: { type: String },
+            type: String,
+            default: null,
         },
         estimatedCost: {
             type: Number,

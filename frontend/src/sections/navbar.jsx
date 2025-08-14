@@ -1,102 +1,242 @@
-import React, { useState, useEffect } from 'react';
-import { Button } from "@/components/ui/button";
-import { AlignJustify } from 'lucide-react';
+'use client';
+import * as React from 'react';
+import { useState, useEffect } from 'react';
+import { Button } from '@/components/ui/button';
+import {
+  NavigationMenu,
+  NavigationMenuItem,
+  NavigationMenuLink,
+  NavigationMenuList,
+} from '@/components/ui/navigation-menu';
+import { Popover, PopoverContent, PopoverTrigger } from '@/components/ui/popover';
+import { AlignJustify, X } from 'lucide-react';
+import { cn } from '@/lib/utils';
 import { LoginForm } from './LoginForm';
 import { RegistrationForm } from './RegistrationForm';
-
+import { useAuth } from '@/context/AuthContext';
+import UserMenu from '@/components/ui/navbar-components/UserMenu';
+import { TechnicianMenu } from '@/components/ui/navbar-components/TechnicianMenu';
+import { AdminMenu } from '@/components/ui/navbar-components/AdminMenu';
+const MobileNavItem = React.forwardRef(({ href, title, onClick }, ref) => {
+  return (
+    <NavigationMenuItem className="w-full">
+      <Button
+        asChild
+        variant="ghost"
+        className="w-full justify-start text-lg font-semibold"
+        onClick={onClick}
+      >
+        <a href={href} ref={ref}>
+          {title}
+        </a>
+      </Button>
+    </NavigationMenuItem>
+  );
+});
+MobileNavItem.displayName = 'MobileNavItem';
+const SignedOutMenu = ({ onSignInClick, onSignUpClick }) => {
+  return (
+    <div className="flex items-center space-x-4">
+      <Button variant="outline" onClick={onSignInClick}>
+        Sign In
+      </Button>
+      <Button onClick={onSignUpClick}>Get Started</Button>
+    </div>
+  );
+};
 const Navbar = () => {
   const [isScrolled, setIsScrolled] = useState(false);
-  const [isMenuOpen, setIsMenuOpen] = useState(false); // State for the mobile menu
+  const [isMenuOpen, setIsMenuOpen] = useState(false);
   const [activePanel, setActivePanel] = useState(null);
-
+  const { user, token, role, logout } = useAuth();
+  const isLoggedIn = !!token && !!user;
+  const userRole = role;
   const handleScroll = () => {
     setIsScrolled(window.scrollY > 0);
   };
-
-  // Add the missing function here
   const handleMenuToggle = () => {
     setIsMenuOpen(!isMenuOpen);
   };
-
   const handleSignInClick = () => {
     setActivePanel('login');
+    setIsMenuOpen(false);
   };
-
   const handleSignUpClick = () => {
     setActivePanel('register');
+    setIsMenuOpen(false);
   };
-
   const handleClosePanel = () => {
     setActivePanel(null);
   };
-  
   const handleOverlayClick = (e) => {
     if (e.target === e.currentTarget) {
       handleClosePanel();
     }
   };
-
+  const handleUserMenuItemClick = (action) => {
+    if (action === 'logout') {
+      logout();
+      console.log('Logging out...');
+    }
+  };
   useEffect(() => {
     window.addEventListener('scroll', handleScroll);
     return () => window.removeEventListener('scroll', handleScroll);
   }, []);
-
+  const navigationLinks = [
+    { href: '#', label: 'Lorem' },
+    { href: '#', label: 'Ipsum' },
+    { href: '#', label: 'Blog' },
+    { href: '#', label: 'Contact' },
+    { href: '#', label: 'About' },
+  ];
   return (
     <div>
-      <nav
-        className={`
-          py-4 mx-auto sticky top-0 z-10
-          ${isScrolled ? 'backdrop-blur-xl backdrop-filter bg-background/50 shadow-lg' : 'bg-transparent'}
-        `}
+      <header
+        className={cn(
+          'sticky top-0 z-50 w-full transition-all duration-300',
+          isScrolled ? 'backdrop-blur-xl bg-background/80 shadow-lg' : 'bg-transparent'
+        )}
       >
-        <div className="flex container justify-between px-4">
-          <div className="flex items-center">
-            <img src="/assets/lyfelynk.svg" alt="LyfeLynk Logo" className="w-8 h-8 mr-2" />
-            <a href="/" className="scroll-m-20 text-2xl lg:text-3xl font-semibold tracking-tight">
-              LyfeLynk
-            </a>
-          </div>
-
-          <Button
-            onClick={handleMenuToggle} // The function is now defined and can be used here
-            aria-label="Open menu"
-            aria-expanded={isMenuOpen}
-            className="md:hidden focus:outline-hidden"
+        <div className="container mx-auto flex h-16 items-center justify-between px-4">
+          <a
+            href="/"
+            className="flex items-center space-x-2 text-primary hover:text-primary/90 transition-colors"
           >
-            <AlignJustify className='h-4 w-4' />
-          </Button>
-
-          <ul className="hidden md:flex items-center space-x-8">
-            <li><a href="#" className="hover:text-primary font-semibold">Lorem</a></li>
-            <li><a href="#" className="hover:text-primary font-semibold">Ipsum</a></li>
-            <li><a href="#" className="hover:text-primary font-semibold">Blog</a></li>
-            <li><a href="#" className="hover:text-primary font-semibold">Contact</a></li>
-            <li><a href="#" className="hover:text-primary font-semibold">About</a></li>
-          </ul>
-
-          <div className="hidden md:flex items-center space-x-4">
-            <Button variant="outline" onClick={handleSignInClick}>Sign In</Button>
-            <Button onClick={handleSignUpClick}>Get Started</Button>
+            <span className="font-bold text-xl sm:text-2xl">Repair Portal</span>
+          </a>
+          <div className="hidden md:flex items-center space-x-8">
+            <NavigationMenu>
+              <NavigationMenuList className="gap-1">
+                {navigationLinks.map((link, index) => (
+                  <NavigationMenuItem key={index}>
+                    <NavigationMenuLink
+                      href={link.href}
+                      className="text-muted-foreground hover:text-primary font-medium transition-colors cursor-pointer group inline-flex h-10 w-max items-center justify-center rounded-md bg-transparent px-4 py-2 text-sm focus:bg-accent focus:text-accent-foreground focus:outline-none disabled:pointer-events-none disabled:opacity-50"
+                    >
+                      {link.label}
+                    </NavigationMenuLink>
+                  </NavigationMenuItem>
+                ))}
+              </NavigationMenuList>
+            </NavigationMenu>
+            <div className="flex items-center space-x-4">
+              {isLoggedIn ? (
+                userRole === 'user' ? (
+                  <UserMenu onItemClick={handleUserMenuItemClick} />
+                ) : userRole === 'technician' ? (
+                  <TechnicianMenu onItemClick={handleUserMenuItemClick} />
+                ) : userRole === 'admin' ? (
+                  <AdminMenu onItemClick={handleUserMenuItemClick} />
+                ) : null
+              ) : (
+                <SignedOutMenu
+                  onSignInClick={handleSignInClick}
+                  onSignUpClick={handleSignUpClick}
+                />
+              )}
+            </div>
+          </div>
+          <div className="md:hidden">
+            <Popover open={isMenuOpen} onOpenChange={setIsMenuOpen}>
+              <PopoverTrigger asChild>
+                <Button
+                  variant="ghost"
+                  size="icon"
+                  className="group h-9 w-9"
+                  onClick={handleMenuToggle}
+                >
+                  {isMenuOpen ? (
+                    <X className="h-5 w-5" />
+                  ) : (
+                    <AlignJustify className="h-5 w-5" />
+                  )}
+                  <span className="sr-only">Toggle mobile menu</span>
+                </Button>
+              </PopoverTrigger>
+              <PopoverContent align="end" className="w-64 p-1 mt-2">
+                <NavigationMenu className="max-w-none">
+                  <NavigationMenuList className="flex-col items-start gap-1">
+                    {navigationLinks.map((link, index) => (
+                      <MobileNavItem
+                        key={index}
+                        href={link.href}
+                        title={link.label}
+                        onClick={handleMenuToggle}
+                      />
+                    ))}
+                    <div className="flex flex-col gap-2 mt-4 w-full">
+                      {isLoggedIn ? (
+                        userRole === 'user' ? (
+                          <UserMenu
+                            onItemClick={(action) => {
+                              handleUserMenuItemClick(action);
+                              handleMenuToggle();
+                            }}
+                          />
+                        ) : userRole === 'technician' ? (
+                          <TechnicianMenu
+                            onItemClick={(action) => {
+                              handleUserMenuItemClick(action);
+                              handleMenuToggle();
+                            }}
+                          />
+                        ) : userRole === 'admin' ? (
+                          <AdminMenu
+                            onItemClick={(action) => {
+                              handleUserMenuItemClick(action);
+                              handleMenuToggle();
+                            }}
+                          />
+                        ) : null
+                      ) : (
+                        <>
+                          <Button
+                            variant="outline"
+                            onClick={() => {
+                              handleSignInClick();
+                              handleMenuToggle();
+                            }}
+                          >
+                            Sign In
+                          </Button>
+                          <Button
+                            onClick={() => {
+                              handleSignUpClick();
+                              handleMenuToggle();
+                            }}
+                          >
+                            Get Started
+                          </Button>
+                        </>
+                      )}
+                    </div>
+                  </NavigationMenuList>
+                </NavigationMenu>
+              </PopoverContent>
+            </Popover>
           </div>
         </div>
-      </nav>
-
+      </header>
       {activePanel && (
         <div
-          className="fixed inset-0 flex items-center justify-center bg-black/50 backdrop-blur-xl z-50"
+          className="fixed inset-0 flex items-center justify-center bg-black/50 backdrop-blur-sm z-[100]"
           onClick={handleOverlayClick}
         >
           <div
-            className="rounded-lg p-6 w-full max-w-md"
+            className="rounded-lg p-6 w-full max-w-md bg-background"
             onClick={(e) => e.stopPropagation()}
           >
-            {activePanel === 'login' && <LoginForm onSwitchToRegister={handleSignUpClick} />}
-            {activePanel === 'register' && <RegistrationForm onSwitchToLogin={handleSignInClick} />}
+            {activePanel === 'login' && (
+              <LoginForm onSwitchToRegister={handleSignUpClick} />
+            )}
+            {activePanel === 'register' && (
+              <RegistrationForm onSwitchToLogin={handleSignInClick} />
+            )}
           </div>
         </div>
       )}
     </div>
   );
 };
-
 export default Navbar;

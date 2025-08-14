@@ -1,4 +1,4 @@
-@import 'tailwindcss';
+@import "tailwindcss";
 
 @plugin 'tailwindcss-animate';
 
@@ -134,7 +134,6 @@
   }
 }
 
- 
 @layer base {
   * {
     @apply border-border;
