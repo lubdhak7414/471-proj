@@ -2,8 +2,8 @@ import { Facebook, Mail, Twitter, Linkedin } from 'lucide-react';
 
 function Footer() {
   return (
-    <footer className="py-12 px-4 text-gray-400">
-      <div className="container mx-auto grid grid-cols-1 md:grid-cols-4 gap-12 border-b border-gray-700 pb-8">
+    <footer className="py-12 px-4 text-gray-400 border-t border-gray-700">
+      <div className="container mx-auto grid grid-cols-1 md:grid-cols-4 gap-12  pb-8">
         {/* Company Info */}
         <div className="space-y-4">
           <div className="flex items-center">
@@ -14,6 +14,9 @@ function Footer() {
           </div>
           <p className="max-w-xs leading-relaxed">
             LyfeLynk is your all-in-one solution for seamless digital connections and services.
+          </p>
+          <p>
+            &copy; {new Date().getFullYear()} LyfeLynk. All rights reserved.
           </p>
         </div>
 
@@ -67,13 +70,6 @@ function Footer() {
             </a>
           </div>
         </div>
-      </div>
-      
-      {/* Copyright */}
-      <div className="mt-8 text-center text-sm">
-        <p>
-          &copy; {new Date().getFullYear()} LyfeLynk. All rights reserved.
-        </p>
       </div>
     </footer>
   );
