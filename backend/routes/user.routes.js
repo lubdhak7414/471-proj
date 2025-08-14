@@ -6,7 +6,7 @@ import {
 	updateUser,
 	deleteUser,
 	getAllUsers,
-	
+	loginUser
 } from '../controllers/user.controller.js';
 
 const router = express.Router();
@@ -14,6 +14,7 @@ const router = express.Router();
 // @route   POST /api/users
 // @desc    Create a new user
 router.post('/', createUser);
+
 
 // @route   GET /api/users/:id
 // @desc    Get a user by ID
@@ -30,5 +31,7 @@ router.delete('/:id', deleteUser);
 // @route   GET /api/users
 // @desc    Get all users (Admin use)
 router.get('/', getAllUsers);
+
+router.post('/login', loginUser);
 
 export default router;
