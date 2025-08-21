@@ -48,7 +48,6 @@ export function RegistrationForm({ onSwitchToLogin }) {
   };
 
   return (
-    // ... rest of your component code is the same}
     <Card className="w-full max-w-sm">
       <CardHeader>
         <CardTitle>Create an account</CardTitle>
