@@ -1,0 +1,17 @@
+Backend
+Install the required packages in your Node.js/Express server:
+
+PS: ........\471-proj-main
+
+npm install socket.io
+npm install cors express http
+
+
+
+Frontend Installation
+Install the Socket.IO client in your React application:
+
+PC:............\471-proj-main\frontend>
+
+npm install socket.io-client
+ npm install react-calendar
