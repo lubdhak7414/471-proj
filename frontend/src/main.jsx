@@ -11,8 +11,30 @@ import ProtectedRoutes from './context/ProtectedRoutes.jsx'; // Make sure the pa
 import './index.css';
 import Layout from './Layout.jsx'; //
 
+
+
+import SearchTechnicians from './components/SearchTechnician.jsx';
+import PaymentGateway from './components/PaymentGateway.jsx';
+import TechnicianDashboard from './components/TechnicianDashboard.jsx';
+
+import { SocketProvider } from './context/socket.provider.jsx'; // Import SocketProvider
+
+
+
 // Define your routes
 const router = createBrowserRouter([
+  {
+    path:'/search',
+    element: <SearchTechnicians />
+  },
+  {
+    path:'/dashboard',
+    element: <TechnicianDashboard />
+  },
+    {
+    path:'/payment',
+    element: <PaymentGateway />
+  },
   {
     path: '/',
     element: <LandingPage />,
@@ -42,9 +64,11 @@ const router = createBrowserRouter([
 ReactDOM.createRoot(document.getElementById('root')).render(
   <React.StrictMode>
     <AuthProvider>
-      <Layout>
-        <RouterProvider router={router} />
-      </Layout>
+      <SocketProvider> {/* Add SocketProvider here */}
+        <Layout>
+          <RouterProvider router={router} />
+        </Layout>
+      </SocketProvider>
     </AuthProvider>
   </React.StrictMode>
 );
