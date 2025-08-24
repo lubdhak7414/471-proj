@@ -20,7 +20,7 @@ dotenv.config();
 console.log("Loaded PORT from .env:", process.env.PORT);
 
 const app = express();
-const PORT = process.env.PORT || 1966;
+const PORT = process.env.PORT || 3000;
 
 // CORS configuration: Allow localhost:5173
 const corsOptions = {
