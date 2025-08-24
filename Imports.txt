@@ -14,4 +14,4 @@ Install the Socket.IO client in your React application:
 PC:............\471-proj-main\frontend>
 
 npm install socket.io-client
- npm install react-calendar
+npm install react-calendar
