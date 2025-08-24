@@ -9,7 +9,8 @@ import {
     rescheduleBooking,
     getBookingHistory,
     getUserCancellableBookings,
-    bulkCancelBookings
+    bulkCancelBookings,
+    getUserBookings
 } from "../controllers/booking.controller.js";
 
 const router = express.Router();
@@ -39,5 +40,6 @@ router.put('/reschedule/:id', rescheduleBooking);
 router.get('/history/:id', getBookingHistory);
 router.get('/user/:userId/cancellable', getUserCancellableBookings);
 router.put('/bulk-cancel', bulkCancelBookings);
+router.get("/user/:userId", getUserBookings);
 
 export default router;
