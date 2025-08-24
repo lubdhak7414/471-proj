@@ -7,16 +7,16 @@ function Footer() {
         {/* Company Info */}
         <div className="space-y-4">
           <div className="flex items-center">
-            <img src="/assets/lyfelynk.svg" alt="LyfeLynk Logo" className="w-9 h-9 mr-2" />
+            
             <span className="text-gray-50 text-3xl font-bold tracking-tight">
-              LyfeLynk
+              Repair Portal
             </span>
           </div>
           <p className="max-w-xs leading-relaxed">
-            LyfeLynk is your all-in-one solution for seamless digital connections and services.
+            Repair Portal is your all-in-one solution for seamless digital connections and services.
           </p>
           <p>
-            &copy; {new Date().getFullYear()} LyfeLynk. All rights reserved.
+            &copy; {new Date().getFullYear()} Repair Portal. All rights reserved.
           </p>
         </div>
 

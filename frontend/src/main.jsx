@@ -7,7 +7,8 @@ import { TechnicianOnboarding } from '../pages/TechnicianOnboarding.jsx';
 import { RepairService } from './RepairService.jsx';
 import { ServiceBooking } from './ServiceBooking.jsx';
 import { AuthProvider } from './context/AuthContext';
-import ProtectedRoutes from './context/ProtectedRoutes.jsx'; // Make sure the path is correct
+import ProtectedRoutes from './context/ProtectedRoutes.jsx';
+import {UserBookings} from './UserBookingsDetails.jsx';
 import './index.css';
 import Layout from './Layout.jsx'; //
 
@@ -34,6 +35,10 @@ const router = createBrowserRouter([
         path: '/service-booking',
         element: <ServiceBooking />,
       },
+      {
+        path: '/user-bookings',
+        element: <UserBookings />,
+      }
     ],
   },
 ]);
