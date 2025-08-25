@@ -5,6 +5,8 @@ import { Input } from '@/components/ui/input';
 import { Button } from '@/components/ui/button';
 import { Card, CardContent, CardDescription, CardFooter, CardHeader, CardTitle } from '@/components/ui/card';
 import { Textarea } from '@/components/ui/textarea'; // For issue description
+import { useNavigate } from 'react-router-dom'; // add this line at the top
+
 
 export function ServiceBooking() {
   const [selectedService, setSelectedService] = useState(''); // Initially empty
@@ -20,6 +22,8 @@ export function ServiceBooking() {
   const [services, setServices] = useState([]); // For storing fetched services
 
   const [estimatedCost, setEstimatedCost] = useState(0);
+  const navigate = useNavigate(); 
+
 
   // Fetch the services from the API
   useEffect(() => {
@@ -75,7 +79,9 @@ export function ServiceBooking() {
         throw new Error(data.message || 'Booking failed. Please try again.');
       }
 
-      alert('Booking created successfully!');
+      // redirect to booking status page for the new booking
+      navigate(`/booking-status/${data._id}`);
+
     } catch (err) {
       setError(err.message);
     } finally {

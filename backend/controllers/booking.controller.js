@@ -340,3 +340,17 @@ export const bulkCancelBookings = async (req, res) => {
         res.status(500).json({ message: "Server Error" });
     }
 };
+
+// Get live booking status 
+export const getBookingStatus = async (req, res) => {
+    try {
+        const booking = await Booking.findById(req.params.id).select("status"); // only return status
+        if (!booking) {
+            return res.status(404).json({ message: "Booking not found" });
+        }
+        res.status(200).json({ status: booking.status });
+    } catch (error) {
+        console.error("Get Booking Status Error:", error);
+        res.status(500).json({ message: "Server Error" });
+    }
+};
