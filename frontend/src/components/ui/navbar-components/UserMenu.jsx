@@ -20,7 +20,7 @@ const UserMenu = ({ onItemClick }) => {
   // Fallback user data if not available
   const userName = user?.name || 'John Doe';
   const userEmail = user?.email || 'john@example.com';
-  const userAvatar = user?.avatar || ''; // Default avatar or use a placeholder
+  const userAvatar = user?.picture || ''; // Default avatar or use a placeholder
 
   const handleLogout = () => {
     logout(); // Call the logout function from AuthContext to clear user data
