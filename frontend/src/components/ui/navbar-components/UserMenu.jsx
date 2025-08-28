@@ -20,12 +20,18 @@ const UserMenu = ({ onItemClick }) => {
   // Fallback user data if not available
   const userName = user?.name || 'John Doe';
   const userEmail = user?.email || 'john@example.com';
-  const userAvatar = user?.avatar || ''; // Default avatar or use a placeholder
+  const userAvatar = user?.picture || ''; // Default avatar or use a placeholder
 
   const handleLogout = () => {
     logout(); // Call the logout function from AuthContext to clear user data
     navigate('/'); // Redirect to home page after logout
   };
+  const handleSearchTechnician = ()=>{
+    navigate('/search');
+  }
+  const handlePayment=()=>{
+    navigate('/payment')
+  }
 
   return (
     <DropdownMenu>
@@ -54,6 +60,14 @@ const UserMenu = ({ onItemClick }) => {
           </div>
         </DropdownMenuLabel>
         <DropdownMenuSeparator />
+        
+        <DropdownMenuItem onClick={handleSearchTechnician}>
+          Search Technician
+        </DropdownMenuItem>
+        <DropdownMenuItem onClick={handlePayment}>
+          Payment-Gateway
+        </DropdownMenuItem>
+
         <DropdownMenuItem onClick={() => onItemClick?.('profile')}>
           Profile
         </DropdownMenuItem>
