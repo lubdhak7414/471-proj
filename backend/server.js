@@ -5,6 +5,7 @@ import apiRoutes from "./routes/index.js";
 import cors from "cors";  // Import the cors package
 
 
+
 //Intesar
 import technicianRoutes from './routes/TechnicianRoutes.js'
 import BookingRoutes from './routes/BookingRoutes.js'
@@ -13,6 +14,7 @@ import MessageRoute from './routes/MessageRoutes.js';
 
 import {createServer} from 'http';
 import {Server} from 'socket.io';
+
 
 
 
@@ -32,11 +34,9 @@ app.use(cors(corsOptions));
 
 // Middleware
 app.use(express.json());
-
 app.use('/api/technicians', technicianRoutes);
 app.use('/api/techDashboard',BookingRoutes);
 app.use('/api/messages',MessageRoute);
-
 // Connect to DB
 connectDB();
 
@@ -99,4 +99,5 @@ httpServer.listen(PORT, () => {
   connectDB();
   console.log(`Server running on port ${PORT}`);
 });
+
 
