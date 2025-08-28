@@ -5,6 +5,7 @@ import offers from '../assets/discount 1.png'
 import Faq from '../assets/help 1.png'
 import Navbar from '../sections/navbar.jsx'
 import { useState } from 'react';
+import { useNavigate } from 'react-router-dom'; // Import useNavigate
 // import { useNavigate } from 'react-router-dom';
 
 
@@ -58,6 +59,7 @@ const SuccessModal = ({ onClose, paymentMethod }) => {
 
 
 export default function PaymentGateway(){
+    const navigate = useNavigate(); 
     const [activeTab, setActiveTab] = useState('card');
     const [showSuccessModal, setShowSuccessModal] = useState(false);
     const [paymentMethod, setPaymentMethod] = useState('');
@@ -74,6 +76,8 @@ export default function PaymentGateway(){
    };
    const closeModal = () => {
         setShowSuccessModal(false);
+        navigate('/search');
+
     };
 
     return <>
