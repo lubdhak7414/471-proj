@@ -8,11 +8,7 @@ import {useAuth} from '../context/AuthContext.jsx'
 
 
 const SearchTechnicians = () => {
-  // const defaultUser = {
-  //   // _id: "689e15f590274d2874e87be8", 
-  //   _id:"6899835743c954cf9b5e37bb",
-  
-  // }
+
   const {user} = useAuth();
 
   const [currentChat, setCurrentChat] = useState(null);
@@ -90,8 +86,8 @@ const SearchTechnicians = () => {
             <option value="carpentry">Carpentry</option>
             <option value="plumbing">Plumbing</option>
             <option value="electrical">Electrical</option>
-            <option value="maintenace">Maintenance</option>
-            <option value="applianceRepair">Appliance Repair</option>
+            <option value="maintenance">Maintenance</option>
+            <option value="appliance Repair">Appliance Repair</option>
           </select>
 
           <input
