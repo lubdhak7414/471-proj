@@ -6,7 +6,8 @@ import {
 	updateUser,
 	deleteUser,
 	getAllUsers,
-	loginUser
+	loginUser,
+	updateUserProfile
 } from '../controllers/user.controller.js';
 
 const router = express.Router();
@@ -34,4 +35,5 @@ router.get('/', getAllUsers);
 
 router.post('/login', loginUser);
 
+router.put('/profile/:id', updateUserProfile);
 export default router;
