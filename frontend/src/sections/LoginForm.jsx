@@ -42,19 +42,23 @@ export function LoginForm({ onSwitchToRegister }) {
       });
 
       const data = await response.json();
-
+      console.log('Login response:', data); // Add this for debugging
       if (!response.ok) {
         throw new Error(data.message || 'Login failed. Please check your credentials.');
       }
 
       // Save the user data, including role
       const { token, user } = data;
+      console.log('User role:', user.role); // Check the role
 
       // Store the token and user info in AuthContext
       login(user, token);
       if (user.role === 'admin') {
         navigate('/admin-dashboard'); // Redirect to admin dashboard if role is admin
-      } else {
+      } else if (user.role === 'technician'){
+        navigate('/dashboard')
+      }
+      else {
         navigate('/service-booking'); // Redirect to booking page for regular user
       }
 
