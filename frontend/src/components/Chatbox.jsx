@@ -9,13 +9,18 @@ const ChatBox = ({ currentUser, otherUser, onClose }) => {
   const [newMessage, setNewMessage] = useState('');
   const socket = useSocket();
   const messagesEndRef = useRef(null);
+
+  // Use currentUser.id (frontend) but convert to _id format for backend
+  const conversationId = currentUser?.id && otherUser?._id 
+    ? generateConversationId(currentUser.id, otherUser._id)
+    : null;
   
-  const conversationId = generateConversationId(currentUser._id, otherUser._id);
+
 
   useEffect(() => {
     const fetchMessages = async () => {
       try {
-        const res = await axios.get(`http://localhost:3000/api/messages/${currentUser._id}/${otherUser._id}`);
+        const res = await axios.get(`http://localhost:3000/api/messages/${currentUser.id}/${otherUser._id}`);
         setMessages(res.data);
       } catch (err) {
         console.error('Error fetching messages:', err);
@@ -23,7 +28,7 @@ const ChatBox = ({ currentUser, otherUser, onClose }) => {
     };
     const markAsRead = async () => {
       try {
-        await axios.put(`http://localhost:3000/api/messages/markRead/${currentUser._id}/${otherUser._id}`);
+        await axios.put(`http://localhost:3000/api/messages/markRead/${currentUser.id}/${otherUser._id}`);
       } catch (err) {
         console.error('Error marking messages as read:', err);
       }
@@ -38,7 +43,7 @@ const ChatBox = ({ currentUser, otherUser, onClose }) => {
       const handleReceiveMessage = (message) => {
         setMessages(prev => [...prev, message]);
         // If the new message is from the other user, mark it as read immediately if chat is open
-        if (message.sender._id !== currentUser._id) {
+        if (message.sender._id !== currentUser.id) {
           markAsRead();
         }
       };
@@ -50,7 +55,7 @@ const ChatBox = ({ currentUser, otherUser, onClose }) => {
         socket.emit('leaveConversation', conversationId);
       };
     }
-  }, [socket, conversationId, currentUser._id, otherUser._id]);
+  }, [socket, conversationId, currentUser.id, otherUser._id]);
 
   useEffect(() => {
     scrollToBottom();
@@ -66,7 +71,7 @@ const ChatBox = ({ currentUser, otherUser, onClose }) => {
 
     const messageData = {
       conversationId,
-      sender: currentUser._id,
+      sender: currentUser.id,
       receiver: otherUser._id,
       content: newMessage.trim(),
     };
@@ -81,14 +86,14 @@ const ChatBox = ({ currentUser, otherUser, onClose }) => {
     <div className="chat-box">
       <div className="chat-header" style={{fontSize:'1.2rem'}}>
         <h4>Chat with {otherUser.name}</h4>
-        <button onClick={onClose}><img style={{width:'20px',cursor:'pointer'}}src={Cross} alt="" /></button>
+        <button onClick={onClose}><img style={{width:'20px',cursor:'pointer', border:'none'}} src={Cross} alt="" /></button>
       </div>
       
       <div className="chat-messages">
         {messages.map((msg) => (
           <div 
             key={msg._id} 
-            className={`message ${msg.sender._id === currentUser._id ? 'sent' : 'received'}`}
+            className={`message ${msg.sender._id === currentUser.id ? 'sent' : 'received'}`}
           >
             <div className="message-sender">
               {/* <img 
