@@ -150,12 +150,14 @@
 .search-container {
   margin-top: 5rem;
   width: 100%;
-  display: grid;
-  justify-content: center; 
+  min-height: 100vh;
+  /* display: grid; */
+
   align-items: center;
   place-items: center;
   /* height: 20vh; */
 }
+
 .header-title{
   display: flex;
   align-items: center;
@@ -356,37 +358,7 @@
   margin: 5px 0;
   font-size: 14px;
 }
-nav{
-  background-color: #666666;
-  width:96%;
-  height: 4rem;
-  justify-content: center;
 
-  margin: auto;
-  border-radius: 0.5rem;
-  color: #e0e0e0;
-}
-
-.nav-items{
-  display: flex;
-  justify-content: space-around;
-
-  margin: auto;
- 
-
-}
-.nav-items li{
-  margin-top: 1rem;
-  list-style: none;
- 
-
-}
-.nav-items li a{
-  text-decoration: none;
-  color: #fcfafa;
-  
-  font-size: 1.3rem;
-}
 .book-btn {
   padding: 5px 15px;
   border: none;
@@ -719,3 +691,109 @@ nav{
 .conversation-avatar.color-4 { background-color: #9C27B0; }
 .conversation-avatar.color-5 { background-color: #E91E63; }
 
+.dialog-overlay {
+  position: fixed;
+  top: 0;
+  left: 0;
+  right: 0;
+  bottom: 0;
+  background-color: rgba(0, 0, 0, 0.5);
+  display: flex;
+  justify-content: center;
+  align-items: center;
+  z-index: 1000;
+}
+        
+.cancel-dialog {
+  background-color: white;
+  padding: 2rem;
+  color:#000;
+  border-radius: 12px;
+  box-shadow: 0 5px 20px rgba(0, 0, 0, 0.15);
+  width: 90%;
+  max-width: 500px;
+  max-height: 80vh;
+  overflow-y: auto;
+}
+        
+.cancel-dialog h3 {
+  margin: 0 0 0.5rem 0;
+  color: #333;
+  font-size: 1.5rem;
+}
+
+.cancel-dialog p {
+  margin: 0 0 1rem 0;
+  color: #666;
+}
+
+.cancel-dialog textarea {
+  width: 100%;
+  padding: 12px;
+  border: 1px solid #ddd;
+  border-radius: 6px;
+  font-family: inherit;
+  font-size: 1rem;
+  margin-bottom: 1.5rem;
+  resize: vertical;
+  min-height: 100px;
+  box-sizing: border-box;
+}
+
+.cancel-dialog textarea:focus {
+  outline: none;
+  border-color: #113a8d;
+  box-shadow: 0 0 0 2px rgba(17, 58, 141, 0.2);
+}
+
+.dialog-buttons {
+  display: flex;
+  gap: 1rem;
+  justify-content: flex-end;
+}
+
+.cancel-confirm-btn {
+  background-color: #e74c3c;
+  color: white;
+  border: none;
+  padding: 0.75rem 1.5rem;
+  border-radius: 6px;
+  cursor: pointer;
+  font-weight: 600;
+  transition: background-color 0.2s;
+}
+
+.cancel-confirm-btn:hover {
+  background-color: #c0392b;
+}
+
+.cancel-cancel-btn {
+  background-color: #95a5a6;
+  color: white;
+  border: none;
+  padding: 0.75rem 1.5rem;
+  border-radius: 6px;
+  cursor: pointer;
+  font-weight: 600;
+  transition: background-color 0.2s;
+}
+
+.cancel-cancel-btn:hover {
+  background-color: #7f8c8d;
+}
+        
+@media (max-width: 600px) {
+  .cancel-dialog {
+    width: 95%;
+    padding: 1.5rem;
+  }
+  
+  .dialog-buttons {
+    flex-direction: column;
+  }
+  
+  .cancel-confirm-btn,
+  .cancel-cancel-btn {
+    width: 100%;
+  }
+}
