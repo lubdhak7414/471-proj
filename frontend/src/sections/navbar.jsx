@@ -15,8 +15,8 @@ import { LoginForm } from './LoginForm';
 import { RegistrationForm } from './RegistrationForm';
 import { useAuth } from '@/context/AuthContext';
 import UserMenu from '@/components/ui/navbar-components/UserMenu';
-import { TechnicianMenu } from '@/components/ui/navbar-components/TechnicianMenu';
-import { AdminMenu } from '@/components/ui/navbar-components/AdminMenu';
+import  TechnicianMenu  from '@/components/ui/navbar-components/TechnicianMenu';
+import  AdminMenu  from '@/components/ui/navbar-components/AdminMenu';
 const MobileNavItem = React.forwardRef(({ href, title, onClick }, ref) => {
   return (
     <NavigationMenuItem className="w-full">
