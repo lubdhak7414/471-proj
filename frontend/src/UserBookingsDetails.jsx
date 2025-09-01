@@ -226,10 +226,10 @@ export function UserBookings() {
       <Navbar />
       <div className="w-full max-w-7xl mx-auto py-8 p-4 sm:p-6 lg:p-8">
         <div className="text-center mb-12">
-          <h1 className="text-3xl sm:text-4xl lg:text-5xl font-bold text-gray-900 mb-4">
+          <h1 className="text-3xl sm:text-4xl lg:text-5xl font-bold text-gray-300 mb-4">
             My Bookings
           </h1>
-          <p className="text-lg text-gray-600 max-w-2xl mx-auto">
+          <p className="text-lg text-gray-200 max-w-2xl mx-auto">
             View and manage all your service bookings. Click on any booking to view details, reschedule, or cancel.
           </p>
         </div>
@@ -273,14 +273,14 @@ export function UserBookings() {
               >
                 <CardHeader className="pb-3">
                   <div className="flex justify-between items-start mb-2">
-                    <CardTitle className="text-lg font-semibold text-gray-900">
+                    <CardTitle className="text-lg font-semibold text-gray-300">
                       {booking.service?.name || 'Service'}
                     </CardTitle>
                     <Badge className={`text-white ${getStatusColor(booking.status)}`}>
                       {booking.status}
                     </Badge>
                   </div>
-                  <CardDescription className="text-sm text-gray-600">
+                  <CardDescription className="text-sm text-gray-200">
                     {booking.service?.category || 'General'}
                     {booking.isBidding && (
                       <span className="ml-2 text-orange-600 font-medium">• Bidding</span>
@@ -288,24 +288,24 @@ export function UserBookings() {
                   </CardDescription>
                 </CardHeader>
                 <CardContent className="space-y-4">
-                  <p className="text-sm text-gray-700 line-clamp-2">
+                  <p className="text-sm text-gray-200 line-clamp-2">
                     {booking.description}
                   </p>
 
                   <div className="space-y-3">
-                    <div className="flex items-center gap-2 text-sm text-gray-600">
+                    <div className="flex items-center gap-2 text-sm text-gray-200">
                       <Calendar className="h-4 w-4 text-blue-500" />
                       <span>{formatDate(booking.preferredDate)}</span>
                     </div>
-                    <div className="flex items-center gap-2 text-sm text-gray-600">
+                    <div className="flex items-center gap-2 text-sm text-gray-200">
                       <Clock className="h-4 w-4 text-green-500" />
                       <span>{formatTime(booking.preferredTime)}</span>
                     </div>
-                    <div className="flex items-center gap-2 text-sm text-gray-600">
+                    <div className="flex items-center gap-2 text-sm text-gray-200">
                       <MapPin className="h-4 w-4 text-red-500" />
                       <span className="line-clamp-1">{booking.address}</span>
                     </div>
-                    <div className="flex items-center gap-2 text-sm text-gray-600">
+                    <div className="flex items-center gap-2 text-sm text-gray-200">
                       <DollarSign className="h-4 w-4 text-yellow-500" />
                       <span>
                         {booking.estimatedCost > 0 
@@ -316,7 +316,7 @@ export function UserBookings() {
                       </span>
                     </div>
                     {booking.technician && (
-                      <div className="flex items-center gap-2 text-sm text-gray-600">
+                      <div className="flex items-center gap-2 text-sm text-gray-200">
                         <User className="h-4 w-4 text-purple-500" />
                         <span>{booking.technician.user?.name || booking.technician.name || 'Technician assigned'}</span>
                       </div>
@@ -344,10 +344,10 @@ export function UserBookings() {
         <Dialog open={dialogOpen} onOpenChange={setDialogOpen}>
           <DialogContent className="sm:max-w-2xl max-h-[90vh] overflow-y-auto">
             <DialogHeader>
-              <DialogTitle className="text-xl font-semibold text-gray-900">
+              <DialogTitle className="text-xl font-semibold text-gray-300">
                 Manage Booking
               </DialogTitle>
-              <DialogDescription className="text-gray-600">
+              <DialogDescription className="text-gray-200">
                 {selectedBooking?.service?.name} - {selectedBooking && formatDate(selectedBooking.preferredDate)}
               </DialogDescription>
             </DialogHeader>
@@ -355,19 +355,19 @@ export function UserBookings() {
             <div className="space-y-6">
               {/* Current Booking Details */}
               <div className="p-4 rounded-lg">
-                <h4 className="text-sm font-semibold text-gray-900 mb-3">Booking Details</h4>
+                <h4 className="text-sm font-semibold text-gray-300 mb-3">Booking Details</h4>
                 <div className="grid grid-cols-1 md:grid-cols-2 gap-3 text-sm">
-                  <div><span className="font-medium text-gray-700">Service:</span> {selectedBooking?.service?.name}</div>
-                  <div><span className="font-medium text-gray-700">Category:</span> {selectedBooking?.service?.category}</div>
-                  <div><span className="font-medium text-gray-700">Date:</span> {selectedBooking && formatDate(selectedBooking.preferredDate)}</div>
-                  <div><span className="font-medium text-gray-700">Time:</span> {selectedBooking && formatTime(selectedBooking.preferredTime)}</div>
-                  <div className="md:col-span-2"><span className="font-medium text-gray-700">Address:</span> {selectedBooking?.address}</div>
-                  <div><span className="font-medium text-gray-700">Status:</span> 
+                  <div><span className="font-medium text-gray-200">Service:</span> {selectedBooking?.service?.name}</div>
+                  <div><span className="font-medium text-gray-200">Category:</span> {selectedBooking?.service?.category}</div>
+                  <div><span className="font-medium text-gray-200">Date:</span> {selectedBooking && formatDate(selectedBooking.preferredDate)}</div>
+                  <div><span className="font-medium text-gray-200">Time:</span> {selectedBooking && formatTime(selectedBooking.preferredTime)}</div>
+                  <div className="md:col-span-2"><span className="font-medium text-gray-200">Address:</span> {selectedBooking?.address}</div>
+                  <div><span className="font-medium text-gray-200">Status:</span> 
                     <Badge className={`ml-2 text-white ${getStatusColor(selectedBooking?.status)}`}>
                       {selectedBooking?.status}
                     </Badge>
                   </div>
-                  <div><span className="font-medium text-gray-700">Priority:</span> 
+                  <div><span className="font-medium text-gray-200">Priority:</span> 
                     <Badge variant="outline" className={`ml-2 text-xs ${getUrgencyColor(selectedBooking?.urgency)}`}>
                       {selectedBooking?.urgency}
                     </Badge>
@@ -378,14 +378,14 @@ export function UserBookings() {
               {/* Technician Info */}
               {selectedBooking?.technician && (
                 <div className="bg-blue-50 p-4 rounded-lg">
-                  <h4 className="text-sm font-semibold text-gray-900 mb-3">Assigned Technician</h4>
+                  <h4 className="text-sm font-semibold text-gray-300 mb-3">Assigned Technician</h4>
                   <div className="flex items-center gap-3">
                     <div className="w-10 h-10 bg-blue-100 rounded-full flex items-center justify-center">
                       <User className="h-5 w-5 text-blue-600" />
                     </div>
                     <div>
-                      <p className="font-medium text-gray-900">{selectedBooking.technician.user?.name || selectedBooking.technician.name}</p>
-                      <p className="text-sm text-gray-600">{selectedBooking.technician.user?.phone || selectedBooking.technician.phone}</p>
+                      <p className="font-medium text-gray-300">{selectedBooking.technician.user?.name || selectedBooking.technician.name}</p>
+                      <p className="text-sm text-gray-200">{selectedBooking.technician.user?.phone || selectedBooking.technician.phone}</p>
                     </div>
                   </div>
                 </div>
@@ -394,7 +394,7 @@ export function UserBookings() {
               {/* Reschedule Section */}
               {selectedBooking?.status !== 'completed' && selectedBooking?.status !== 'cancelled' && (
                 <div className="space-y-3">
-                  <label htmlFor="reschedule-time" className="text-sm font-semibold text-gray-900">
+                  <label htmlFor="reschedule-time" className="text-sm font-semibold text-gray-300">
                     Reschedule Booking
                   </label>
                   <Input
@@ -410,11 +410,11 @@ export function UserBookings() {
               {/* Bids Section */}
               {(selectedBooking?.isBidding || selectedBooking?.status === 'bidding') && (
                 <div className="space-y-4">
-                  <h4 className="text-sm font-semibold text-gray-900">Available Bids</h4>
+                  <h4 className="text-sm font-semibold text-gray-300">Available Bids</h4>
                   {bidsLoading ? (
                     <div className="text-center py-4">
                       <div className="animate-spin rounded-full h-8 w-8 border-b-2 border-blue-600 mx-auto mb-2"></div>
-                      <p className="text-sm text-gray-600">Loading bids...</p>
+                      <p className="text-sm text-gray-200">Loading bids...</p>
                     </div>
                   ) : bids.length === 0 ? (
                     <div className="text-center py-8 text-gray-500">
@@ -429,8 +429,8 @@ export function UserBookings() {
                           <CardContent className="p-4">
                             <div className="flex justify-between items-start mb-3">
                               <div>
-                                <h5 className="font-semibold text-gray-900">{bid.technician?.user?.name || bid.technician?.name}</h5>
-                                <div className="flex items-center gap-1 text-sm text-gray-600 mt-1">
+                                <h5 className="font-semibold text-gray-300">{bid.technician?.user?.name || bid.technician?.name}</h5>
+                                <div className="flex items-center gap-1 text-sm text-gray-200 mt-1">
                                   <Phone className="h-3 w-3" />
                                   <span>{bid.technician?.user?.phone || bid.technician?.phone}</span>
                                 </div>
@@ -439,7 +439,7 @@ export function UserBookings() {
                                 ৳{bid.bidAmount}
                               </Badge>
                             </div>
-                            <p className="text-sm text-gray-700 mb-3">{bid.message}</p>
+                            <p className="text-sm text-gray-200 mb-3">{bid.message}</p>
                             <div className="flex justify-between items-center">
                               <span className="text-xs text-gray-500">
                                 Duration: {bid.estimatedDuration}h

@@ -4,6 +4,7 @@ import connectDB from "./config/db.js";
 import apiRoutes from "./routes/index.js";
 import cors from "cors";  // Import the cors package
 
+
 dotenv.config();
 console.log("Loaded PORT from .env:", process.env.PORT);
 
@@ -19,7 +20,7 @@ const corsOptions = {
 app.use(cors(corsOptions));
 
 // Middleware
-app.use(express.json());
+app.use(express.json({ limit: '10mb' }));
 
 // Connect to DB
 connectDB();

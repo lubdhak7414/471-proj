@@ -16,6 +16,7 @@ import { TechnicianBidsPage } from './TechnicianBidsPage.jsx';
 import './index.css';
 import Layout from './Layout.jsx'; //
 import AdminDashboard from './AdminDashboard.jsx';
+import {RepairDiagnosis} from './RepairDiagnosis.jsx';
 
 // Define your routes
 const router = createBrowserRouter([
@@ -51,7 +52,11 @@ const router = createBrowserRouter([
       {
         path: '/user-bookings',
         element: <UserBookings />,
-      }
+      },
+      {
+        path: "/repair-diagnosis",
+        element: <RepairDiagnosis />,
+      },
 
     ],
   },
