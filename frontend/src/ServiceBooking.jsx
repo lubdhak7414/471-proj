@@ -5,7 +5,9 @@ import Footer from './sections/Footer';
 import { Input } from '@/components/ui/input';
 import { Button } from '@/components/ui/button';
 import { Card, CardContent, CardDescription, CardFooter, CardHeader, CardTitle } from '@/components/ui/card';
-import { Textarea } from '@/components/ui/textarea';
+import { Textarea } from '@/components/ui/textarea'; // For issue description
+import { useNavigate } from 'react-router-dom'; // add this line at the top
+
 
 export function ServiceBooking() {
   const { user } = useAuth(); // Use the hook to get the user object
@@ -20,6 +22,8 @@ export function ServiceBooking() {
   const [error, setError] = useState('');
   const [services, setServices] = useState([]);
   const [estimatedCost, setEstimatedCost] = useState(0);
+  const navigate = useNavigate(); 
+
 
   useEffect(() => {
     // Check if user data has been loaded
@@ -100,7 +104,9 @@ export function ServiceBooking() {
         throw new Error(data.message || 'Booking failed. Please try again.');
       }
 
-      alert('Booking created successfully!');
+      // redirect to booking status page for the new booking
+      navigate(`/booking-status/${data._id}`);
+
     } catch (err) {
       setError(err.message);
     } finally {
