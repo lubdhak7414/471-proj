@@ -15,6 +15,7 @@ import { TechnicianBiddingPage } from './TechnicianBidding.jsx';
 import { TechnicianBidsPage } from './TechnicianBidsPage.jsx';
 import './index.css';
 import Layout from './Layout.jsx'; //
+import AdminDashboard from './AdminDashboard.jsx';
 
 // Define your routes
 const router = createBrowserRouter([
@@ -67,7 +68,21 @@ const router = createBrowserRouter([
         element: <TechnicianBidsPage />,
       }
     ],
-  }
+  },
+
+  {
+    element: <ProtectedRoutes allowedRoles={['admin']} />,
+    children: [
+      {
+        path: '/admin-dashboard',
+        element: <AdminDashboard />,
+      },
+
+
+  ],
+}
+
+
 
 ]);
 
