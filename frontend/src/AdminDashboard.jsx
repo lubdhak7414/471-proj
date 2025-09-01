@@ -4,7 +4,7 @@ import Footer from './sections/Footer';
 import { Card, CardHeader, CardTitle, CardContent } from '@/components/ui/card';
 import { Badge } from '@/components/ui/badge';
 import { Tabs, TabsContent, TabsList, TabsTrigger } from '@/components/ui/tabs';
-import { Bar, Doughnut, Line } from 'react-chartjs-2';
+import { Bar, Doughnut } from 'react-chartjs-2';
 import {
   Chart as ChartJS,
   CategoryScale,
@@ -117,7 +117,7 @@ function AdminDashboard() {
       data: [bookingStats.pending, bookingStats.accepted, bookingStats.inProgress, bookingStats.completed, bookingStats.cancelled],
       backgroundColor: ['#fbbf24', '#22c55e', '#3b82f6', '#10b981', '#ef4444'],
       borderWidth: 1,
-      borderColor: '#e5e7eb',
+      borderColor: '#374151',
     }],
   };
 
@@ -136,13 +136,26 @@ function AdminDashboard() {
     plugins: {
       legend: {
         position: 'bottom',
-      },
+        labels: {
+          color: '#e5e7eb'
+        }
+      }
     },
+    scales: {
+      x: {
+        ticks: { color: '#e5e7eb' },
+        grid: { color: '#374151' }
+      },
+      y: {
+        ticks: { color: '#e5e7eb' },
+        grid: { color: '#374151' }
+      }
+    }
   };
 
   if (loading) {
     return (
-      <div className="text-foreground font-inter min-h-screen">
+      <div className="text-white font-inter min-h-screen">
         <Navbar />
         <div className="flex items-center justify-center min-h-[60vh]">
           <div className="text-center">
@@ -157,10 +170,10 @@ function AdminDashboard() {
 
   if (error) {
     return (
-      <div className="text-foreground font-inter min-h-screen">
+      <div className="text-white font-inter min-h-screen">
         <Navbar />
         <div className="flex items-center justify-center min-h-[60vh]">
-          <div className="text-center text-red-500">
+          <div className="text-center text-red-400">
             <p className="text-xl mb-2">⚠️ Error</p>
             <p>{error}</p>
           </div>
@@ -171,63 +184,33 @@ function AdminDashboard() {
   }
 
   return (
-    <div className="text-foreground font-inter min-h-screen ">
+    <div className="text-white font-inter min-h-screen">
       <Navbar />
       <div className="w-full max-w-7xl mx-auto py-8 p-4 sm:p-6 lg:p-8">
         <div className="mb-8">
-          <h1 className="text-4xl font-bold text-gray-900 mb-2">Admin Dashboard</h1>
-          <p className="text-gray-600">Monitor and manage your repair portal</p>
+          <h1 className="text-4xl font-bold mb-2">Admin Dashboard</h1>
+          <p className="text-gray-400">Monitor and manage your repair portal</p>
         </div>
 
-        {/* Quick Stats Cards */}
         <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-4 gap-6 mb-8">
-          <Card className="bg-white border border-gray-200 shadow-sm">
-            <CardContent className="p-6">
-              <div className="flex items-center justify-between">
-                <div>
-                  <p className="text-sm font-medium text-gray-600">Total Users</p>
-                  <p className="text-2xl font-bold text-gray-900">{userStats.total}</p>
+          {[
+            { label: 'Total Users', value: userStats.total, icon: '👥', color: 'text-blue-400' },
+            { label: 'Total Bookings', value: bookingStats.total, icon: '📋', color: 'text-green-400' },
+            { label: 'Active Services', value: serviceStats.total, icon: '🔧', color: 'text-purple-400' },
+            { label: 'Completed Jobs', value: bookingStats.completed, icon: '✅', color: 'text-emerald-400' },
+          ].map(stat => (
+            <Card key={stat.label} className="bg-zinc-900 border border-gray-700 shadow-sm">
+              <CardContent className="p-6">
+                <div className="flex items-center justify-between">
+                  <div>
+                    <p className="text-sm font-medium text-gray-400">{stat.label}</p>
+                    <p className="text-2xl font-bold text-white">{stat.value}</p>
+                  </div>
+                  <div className={`text-3xl ${stat.color}`}>{stat.icon}</div>
                 </div>
-                <div className="text-blue-600 text-3xl">👥</div>
-              </div>
-            </CardContent>
-          </Card>
-
-          <Card className="bg-white border border-gray-200 shadow-sm">
-            <CardContent className="p-6">
-              <div className="flex items-center justify-between">
-                <div>
-                  <p className="text-sm font-medium text-gray-600">Total Bookings</p>
-                  <p className="text-2xl font-bold text-gray-900">{bookingStats.total}</p>
-                </div>
-                <div className="text-green-600 text-3xl">📋</div>
-              </div>
-            </CardContent>
-          </Card>
-
-          <Card className="bg-white border border-gray-200 shadow-sm">
-            <CardContent className="p-6">
-              <div className="flex items-center justify-between">
-                <div>
-                  <p className="text-sm font-medium text-gray-600">Active Services</p>
-                  <p className="text-2xl font-bold text-gray-900">{serviceStats.total}</p>
-                </div>
-                <div className="text-purple-600 text-3xl">🔧</div>
-              </div>
-            </CardContent>
-          </Card>
-
-          <Card className="bg-white border border-gray-200 shadow-sm">
-            <CardContent className="p-6">
-              <div className="flex items-center justify-between">
-                <div>
-                  <p className="text-sm font-medium text-gray-600">Completed Jobs</p>
-                  <p className="text-2xl font-bold text-gray-900">{bookingStats.completed}</p>
-                </div>
-                <div className="text-emerald-600 text-3xl">✅</div>
-              </div>
-            </CardContent>
-          </Card>
+              </CardContent>
+            </Card>
+          ))}
         </div>
 
         <Tabs defaultValue="overview" className="w-full">
@@ -240,81 +223,50 @@ function AdminDashboard() {
 
           <TabsContent value="overview" className="space-y-6">
             <div className="grid grid-cols-1 lg:grid-cols-3 gap-6">
-              <Card className="bg-white">
-                <CardHeader>
-                  <CardTitle>User Distribution</CardTitle>
-                </CardHeader>
-                <CardContent>
-                  <div className="h-64">
-                    <Doughnut data={userChartData} options={chartOptions} />
-                  </div>
-                </CardContent>
-              </Card>
-
-              <Card className="bg-white">
-                <CardHeader>
-                  <CardTitle>Booking Status</CardTitle>
-                </CardHeader>
-                <CardContent>
-                  <div className="h-64">
-                    <Bar data={bookingChartData} options={chartOptions} />
-                  </div>
-                </CardContent>
-              </Card>
-
-              <Card className="bg-white">
-                <CardHeader>
-                  <CardTitle>Service Categories</CardTitle>
-                </CardHeader>
-                <CardContent>
-                  <div className="h-64">
-                    <Doughnut data={serviceChartData} options={chartOptions} />
-                  </div>
-                </CardContent>
-              </Card>
+              {[{
+                title: 'User Distribution',
+                chart: <Doughnut data={userChartData} options={chartOptions} />,
+              }, {
+                title: 'Booking Status',
+                chart: <Bar data={bookingChartData} options={chartOptions} />,
+              }, {
+                title: 'Service Categories',
+                chart: <Doughnut data={serviceChartData} options={chartOptions} />,
+              }].map(({ title, chart }) => (
+                <Card key={title} className="bg-zinc-900 border border-gray-700">
+                  <CardHeader>
+                    <CardTitle>{title}</CardTitle>
+                  </CardHeader>
+                  <CardContent>
+                    <div className="h-64">{chart}</div>
+                  </CardContent>
+                </Card>
+              ))}
             </div>
           </TabsContent>
 
           <TabsContent value="users" className="space-y-6">
             <div className="grid grid-cols-1 md:grid-cols-3 gap-6 mb-6">
-              <Card className="bg-white">
-                <CardHeader>
-                  <CardTitle className="flex items-center justify-between">
-                    Customers
-                    <Badge variant="secondary">{userStats.customers}</Badge>
-                  </CardTitle>
-                </CardHeader>
-                <CardContent>
-                  <p className="text-sm text-gray-600">Regular users who book services</p>
-                </CardContent>
-              </Card>
-
-              <Card className="bg-white">
-                <CardHeader>
-                  <CardTitle className="flex items-center justify-between">
-                    Technicians
-                    <Badge variant="secondary">{userStats.technicians}</Badge>
-                  </CardTitle>
-                </CardHeader>
-                <CardContent>
-                  <p className="text-sm text-gray-600">Service providers</p>
-                </CardContent>
-              </Card>
-
-              <Card className="bg-white">
-                <CardHeader>
-                  <CardTitle className="flex items-center justify-between">
-                    Admins
-                    <Badge variant="secondary">{userStats.admins}</Badge>
-                  </CardTitle>
-                </CardHeader>
-                <CardContent>
-                  <p className="text-sm text-gray-600">System administrators</p>
-                </CardContent>
-              </Card>
+              {[
+                { role: 'Customers', count: userStats.customers },
+                { role: 'Technicians', count: userStats.technicians },
+                { role: 'Admins', count: userStats.admins },
+              ].map(({ role, count }) => (
+                <Card key={role} className="bg-zinc-900 border border-gray-700">
+                  <CardHeader>
+                    <CardTitle className="flex items-center justify-between">
+                      {role}
+                      <Badge variant="secondary">{count}</Badge>
+                    </CardTitle>
+                  </CardHeader>
+                  <CardContent>
+                    <p className="text-sm text-gray-400">{role === 'Customers' ? 'Regular users who book services' : role === 'Technicians' ? 'Service providers' : 'System administrators'}</p>
+                  </CardContent>
+                </Card>
+              ))}
             </div>
 
-            <Card className="bg-white">
+            <Card className="bg-zinc-900 border border-gray-700">
               <CardHeader>
                 <CardTitle>Recent Users</CardTitle>
               </CardHeader>
@@ -323,12 +275,12 @@ function AdminDashboard() {
                   {data.users?.slice(0, 5).map((user) => (
                     <div key={user._id} className="flex items-center justify-between p-3 rounded-lg">
                       <div className="flex items-center space-x-3">
-                        <div className="w-10 h-10 bg-blue-100 rounded-full flex items-center justify-center">
-                          <span className="text-blue-600 font-semibold">{user.name.charAt(0)}</span>
+                        <div className="w-10 h-10 bg-blue-900 rounded-full flex items-center justify-center">
+                          <span className="text-blue-300 font-semibold">{user.name.charAt(0)}</span>
                         </div>
                         <div>
                           <p className="font-medium">{user.name}</p>
-                          <p className="text-sm text-gray-600">{user.email}</p>
+                          <p className="text-sm text-gray-400">{user.email}</p>
                         </div>
                       </div>
                       <Badge variant={user.role === 'admin' ? 'destructive' : user.role === 'technician' ? 'default' : 'secondary'}>
@@ -344,13 +296,13 @@ function AdminDashboard() {
           <TabsContent value="bookings" className="space-y-6">
             <div className="grid grid-cols-2 md:grid-cols-5 gap-4 mb-6">
               {[
-                { label: 'Pending', count: bookingStats.pending, color: 'bg-yellow-100 text-yellow-800' },
-                { label: 'Accepted', count: bookingStats.accepted, color: 'bg-green-100 text-green-800' },
-                { label: 'In Progress', count: bookingStats.inProgress, color: 'bg-blue-100 text-blue-800' },
-                { label: 'Completed', count: bookingStats.completed, color: 'bg-emerald-100 text-emerald-800' },
-                { label: 'Cancelled', count: bookingStats.cancelled, color: 'bg-red-100 text-red-800' },
+                { label: 'Pending', count: bookingStats.pending, color: 'bg-yellow-900 text-yellow-300' },
+                { label: 'Accepted', count: bookingStats.accepted, color: 'bg-green-900 text-green-300' },
+                { label: 'In Progress', count: bookingStats.inProgress, color: 'bg-blue-900 text-blue-300' },
+                { label: 'Completed', count: bookingStats.completed, color: 'bg-emerald-900 text-emerald-300' },
+                { label: 'Cancelled', count: bookingStats.cancelled, color: 'bg-red-900 text-red-300' },
               ].map((stat) => (
-                <Card key={stat.label} className="bg-white">
+                <Card key={stat.label} className="bg-zinc-900 border border-gray-700">
                   <CardContent className="p-4 text-center">
                     <div className={`inline-flex px-2 py-1 rounded-full text-xs font-medium ${stat.color} mb-2`}>
                       {stat.label}
@@ -361,7 +313,7 @@ function AdminDashboard() {
               ))}
             </div>
 
-            <Card className="bg-white">
+            <Card className="bg-zinc-900 border border-gray-700">
               <CardHeader>
                 <CardTitle>Recent Bookings</CardTitle>
               </CardHeader>
@@ -371,7 +323,7 @@ function AdminDashboard() {
                     <div key={booking._id} className="flex items-center justify-between p-3 rounded-lg">
                       <div>
                         <p className="font-medium">{booking.service?.name}</p>
-                        <p className="text-sm text-gray-600">{booking.user?.name} • {booking.address}</p>
+                        <p className="text-sm text-gray-400">{booking.user?.name} • {booking.address}</p>
                       </div>
                       <div className="text-right">
                         <Badge variant={
@@ -395,7 +347,7 @@ function AdminDashboard() {
           <TabsContent value="services" className="space-y-6">
             <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-6">
               {data.services?.services?.map((service) => (
-                <Card key={service._id} className="bg-white">
+                <Card key={service._id} className="bg-zinc-900 border border-gray-700">
                   <CardHeader>
                     <CardTitle className="flex items-center justify-between">
                       {service.name}
@@ -403,7 +355,7 @@ function AdminDashboard() {
                     </CardTitle>
                   </CardHeader>
                   <CardContent>
-                    <p className="text-sm text-gray-600 mb-3">{service.description}</p>
+                    <p className="text-sm text-gray-400 mb-3">{service.description}</p>
                     <div className="flex justify-between text-sm">
                       <span>Duration: {service.estimatedDuration}min</span>
                       <span className="font-medium">৳{service.estimatedPrice.min}-{service.estimatedPrice.max}</span>
