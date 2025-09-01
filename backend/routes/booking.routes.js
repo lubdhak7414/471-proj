@@ -10,7 +10,7 @@ import {
     getBookingHistory,
     getUserCancellableBookings,
     bulkCancelBookings,
-    getBookingStatus
+    getBookingStatus,
     getUserBookings
 } from "../controllers/booking.controller.js";
 
