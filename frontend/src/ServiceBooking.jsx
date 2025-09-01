@@ -1,6 +1,7 @@
 import React, { useState, useEffect } from 'react';
-import Navbar from './sections/navbar'; // Assuming you already have a Navbar
-import Footer from './sections/Footer'; // Assuming you have a Footer component
+import { useAuth } from './context/AuthContext'; // Import the useAuth hook
+import Navbar from './sections/navbar';
+import Footer from './sections/Footer';
 import { Input } from '@/components/ui/input';
 import { Button } from '@/components/ui/button';
 import { Card, CardContent, CardDescription, CardFooter, CardHeader, CardTitle } from '@/components/ui/card';
@@ -9,31 +10,34 @@ import { useNavigate } from 'react-router-dom'; // add this line at the top
 
 
 export function ServiceBooking() {
-  const [selectedService, setSelectedService] = useState(''); // Initially empty
-  const [technician, setTechnician] = useState(''); // This is hardcoded now in the backend as "111"
+  const { user } = useAuth(); // Use the hook to get the user object
+  const [userLoading, setUserLoading] = useState(true); // State to track loading of user
+  const [selectedService, setSelectedService] = useState('');
   const [issueDescription, setIssueDescription] = useState('');
-  const [preferredTime, setPreferredTime] = useState('');  // Initializing preferredTime
-  const [urgency, setUrgency] = useState(''); // Placeholder for urgency
-  const [address, setAddress] = useState(''); // Address input
-  //const [estimatedCost, setEstimatedCost] = useState('');  // Placeholder for cost
-  const [images, setImages] = useState([]);  // Handle image upload
+  const [preferredTime, setPreferredTime] = useState('');
+  const [urgency, setUrgency] = useState('');
+  const [address, setAddress] = useState('');
+  const [images, setImages] = useState([]);
   const [loading, setLoading] = useState(false);
   const [error, setError] = useState('');
-  const [services, setServices] = useState([]); // For storing fetched services
-
+  const [services, setServices] = useState([]);
   const [estimatedCost, setEstimatedCost] = useState(0);
   const navigate = useNavigate(); 
 
 
-  // Fetch the services from the API
   useEffect(() => {
+    // Check if user data has been loaded
+    if (user !== null) {
+      setUserLoading(false);
+    }
+
+    // Fetch available services for the booking
     const fetchServices = async () => {
       try {
         const response = await fetch('http://localhost:3000/api/services/');
         const data = await response.json();
-
         if (response.ok) {
-          setServices(data.services); // Store fetched services
+          setServices(data.services);
         } else {
           throw new Error(data.message || 'Failed to fetch services');
         }
@@ -41,16 +45,37 @@ export function ServiceBooking() {
         setError(err.message);
       }
     };
-
     fetchServices();
-  }, []);
+  }, [user]);
 
   const handleBookingSubmit = async (event) => {
     event.preventDefault();
+
+    // Debug: Log user state
+    console.log('User:', user);
+
+    // Check if the user is logged in and has an ID
+    if (!user || !user.id) {  // Changed from user._id to user.id
+      setError('You must be logged in to create a booking.');
+      return;
+    }
+
+    // Check if preferred time is in the past
+    if (new Date(preferredTime) < new Date()) {
+      setError('Preferred time cannot be in the past');
+      return;
+    }
+
+    // Check if service is selected
+    if (!selectedService) {
+      setError('Please select a service');
+      return;
+    }
+
     setLoading(true);
     setError('');
 
-    const userID = '689e15f590274d2874e87be8';  
+    const userID = user.id; // Use user.id instead of user._id
     const technicianID = '689dbc1e7f68c9bd1ffb7cdd'; // Hardcoded technician ID
 
     try {
@@ -69,7 +94,7 @@ export function ServiceBooking() {
           preferredTime,
           urgency,
           address,
-          estimatedCost
+          estimatedCost,
         }),
       });
 
@@ -89,6 +114,11 @@ export function ServiceBooking() {
     }
   };
 
+  // If user data is still loading, show loading state
+  if (userLoading) {
+    return <div>Loading user data...</div>; // You can replace this with a more detailed loader
+  }
+
   return (
     <div className="text-foreground font-inter">
       <Navbar />
@@ -99,7 +129,6 @@ export function ServiceBooking() {
         <p className="text-lg text-center text-muted-foreground mb-10 max-w-2xl mx-auto">
           Book a service for repair or maintenance. Select a service, describe the issue, and we'll get it scheduled.
         </p>
-
         <Card className="w-full max-w-lg mx-auto">
           <CardHeader>
             <CardTitle>Book Your Service</CardTitle>
@@ -126,19 +155,6 @@ export function ServiceBooking() {
                     ))}
                   </select>
                 </div>
-
-                {/* Technician (Hardcoded ID) */}
-                {/* <div className="grid gap-2">
-                  <label htmlFor="technician">Technician</label>
-                  <Input
-                    id="technician"
-                    value={technician}
-                    onChange={(e) => setTechnician(e.target.value)}
-                    placeholder="Technician ID is hardcoded"
-                    disabled
-                  />
-                </div> */}
-
                 {/* Issue Description */}
                 <div className="grid gap-2">
                   <label htmlFor="description">Issue Description</label>
@@ -150,7 +166,6 @@ export function ServiceBooking() {
                     required
                   />
                 </div>
-
                 {/* Time Selection */}
                 <div className="grid gap-2">
                   <label htmlFor="time">Preferred Time</label>
@@ -162,7 +177,6 @@ export function ServiceBooking() {
                     required
                   />
                 </div>
-
                 {/* Urgency Level Dropdown */}
                 <div className="grid gap-2">
                   <label htmlFor="urgency">Urgency Level</label>
@@ -179,7 +193,6 @@ export function ServiceBooking() {
                     <option value="high">High</option>
                   </select>
                 </div>
-
                 {/* Address */}
                 <div className="grid gap-2">
                   <label htmlFor="address">Address</label>
@@ -191,20 +204,7 @@ export function ServiceBooking() {
                     required
                   />
                 </div>
-
-                {/* Estimated Cost */}
-                {/* <div className="grid gap-2">
-                  <label htmlFor="estimatedCost">Estimated Cost</label>
-                  <Input
-                    id="estimatedCost"
-                    value={estimatedCost}
-                    onChange={(e) => setEstimatedCost(e.target.value)}
-                    placeholder="Enter the estimated cost"
-                    required
-                  />
-                </div> */}
-
-                {/* Images (Optional, for now as a basic input) */}
+                {/* Images (Optional) */}
                 <div className="grid gap-2">
                   <label htmlFor="images">Upload Images (Optional)</label>
                   <Input
@@ -214,11 +214,9 @@ export function ServiceBooking() {
                     multiple
                   />
                 </div>
-
                 {/* Error Message */}
                 {error && <p className="text-red-500 text-sm mt-4">{error}</p>}
               </div>
-
               <CardFooter className="flex-col gap-2 p-0 mt-6">
                 <Button type="submit" className="w-full" disabled={loading}>
                   {loading ? 'Submitting...' : 'Submit Booking'}

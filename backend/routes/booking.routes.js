@@ -11,6 +11,7 @@ import {
     getUserCancellableBookings,
     bulkCancelBookings,
     getBookingStatus
+    getUserBookings
 } from "../controllers/booking.controller.js";
 
 const router = express.Router();
@@ -41,6 +42,6 @@ router.get('/history/:id', getBookingHistory);
 router.get('/user/:userId/cancellable', getUserCancellableBookings);
 router.put('/bulk-cancel', bulkCancelBookings);
 router.get("/status/:id", getBookingStatus);
-
+router.get("/user/:userId", getUserBookings);
 
 export default router;

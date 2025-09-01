@@ -9,8 +9,9 @@ import { ServiceBooking } from './ServiceBooking.jsx';
 import { BookingStatus } from './BookingStatus.jsx';
 import { AuthProvider } from './context/AuthContext';
 import { ReviewTechnician } from './ReviewTechnician.jsx';
-
 import ProtectedRoutes from './context/ProtectedRoutes.jsx'; // Make sure the path is correct
+import ProtectedRoutes from './context/ProtectedRoutes.jsx';
+import {UserBookings} from './UserBookingsDetails.jsx';
 import './index.css';
 import Layout from './Layout.jsx'; //
 
@@ -44,6 +45,9 @@ const router = createBrowserRouter([
       {
         path: '/review/:bookingId',
         element: <ReviewTechnician />,
+      }
+        path: '/user-bookings',
+        element: <UserBookings />,
       }
 
     ],

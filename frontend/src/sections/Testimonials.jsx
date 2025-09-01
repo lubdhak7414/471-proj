@@ -35,7 +35,7 @@ function Testimonials() {
                   <p className="mt-4 text-gray-500">
                     "As a patient, I always felt like my medical data was
                     trapped in silos. Doctors couldn't easily access it, and
-                    I never knew the full picture of my health. LyfeLynk changed everything. Now, I control my data, and I can share it securely with any healthcare provider I choose."
+                    I never knew the full picture of my health. Repair Portal changed everything. Now, I control my data, and I can share it securely with any healthcare provider I choose."
                   </p>
                 </div>
               </Card>
@@ -49,7 +49,7 @@ function Testimonials() {
                 <h3 className="mt-4 text-lg font-semibold text-primary">Kelly Pooja</h3>
                 <div className="flex flex-col h-full">
                   <p className="mt-4 text-gray-500">
-                    "LyfeLynk has been a game-changer for my research. The platform grants 
+                    "Repair Portal has been a game-changer for my research. The platform grants 
                     me access to a diverse pool of anonymized healthcare data, enabling me to 
                     tackle previously impossible research questions. The stringent privacy 
                     measures ensure patient data is secure, while the intuitive interface 
@@ -70,7 +70,7 @@ function Testimonials() {
                   <p className="mt-4 text-gray-500">
                     "As a patient, I always felt like my medical data was
                     trapped in silos. Doctors couldn't easily access it, and
-                    I never knew the full picture of my health. LyfeLynk changed everything. Now, I control my data, and I can share it securely with any healthcare provider I choose."
+                    I never knew the full picture of my health. Repair Portal changed everything. Now, I control my data, and I can share it securely with any healthcare provider I choose."
                   </p>
                 </div>
               </Card>

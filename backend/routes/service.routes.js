@@ -4,7 +4,8 @@ import {
     getAllServices,
     getServiceById,
     getServiceCategories,
-    updateService
+    updateService,
+    deleteService
 } from "../controllers/service.controller.js";
 
 const router = express.Router();
@@ -23,5 +24,8 @@ router.get("/:id", getServiceById);
 
 // Update service
 router.put("/:id", updateService);
+
+// Delete service by ID
+router.delete("/:id", deleteService);
 
 export default router;
