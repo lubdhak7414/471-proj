@@ -11,6 +11,8 @@ import { AuthProvider } from './context/AuthContext';
 import { ReviewTechnician } from './ReviewTechnician.jsx';
 import ProtectedRoutes from './context/ProtectedRoutes.jsx';
 import {UserBookings} from './UserBookingsDetails.jsx';
+import { TechnicianBiddingPage } from './TechnicianBidding.jsx';
+import { TechnicianBidsPage } from './TechnicianBidsPage.jsx';
 import './index.css';
 import Layout from './Layout.jsx'; //
 
@@ -52,6 +54,21 @@ const router = createBrowserRouter([
 
     ],
   },
+  {
+  element: <ProtectedRoutes allowedRoles={['technician']} />,
+    children: [
+      {
+        path: '/technician-bidding',
+        element: <TechnicianBiddingPage />,
+      },
+
+      {
+        path: '/my-bids',
+        element: <TechnicianBidsPage />,
+      }
+    ],
+  }
+
 ]);
 
 // Wrap the RouterProvider with the AuthProvider to provide authentication context globally

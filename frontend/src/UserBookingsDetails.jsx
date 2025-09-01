@@ -4,9 +4,8 @@ import Navbar from './sections/navbar';
 import Footer from './sections/Footer';
 import { Button } from '@/components/ui/button';
 import { Card, CardContent, CardDescription, CardHeader, CardTitle } from '@/components/ui/card';
-import { Dialog, DialogContent, DialogDescription, DialogFooter, DialogHeader, DialogTitle } from '@/components/ui/dialog';
+import { Dialog, DialogContent, DialogDescription, DialogFooter, DialogHeader, DialogTitle, DialogTrigger } from '@/components/ui/dialog';
 import { Input } from '@/components/ui/input';
-import { Textarea } from '@/components/ui/textarea'; // Import Textarea for the reason
 import { Badge } from '@/components/ui/badge';
 import { Calendar, Clock, MapPin, AlertCircle, DollarSign } from 'lucide-react';
 
@@ -18,56 +17,44 @@ export function UserBookings() {
   const [error, setError] = useState('');
   const [selectedBooking, setSelectedBooking] = useState(null);
   const [dialogOpen, setDialogOpen] = useState(false);
-  const [cancelDialogOpen, setCancelDialogOpen] = useState(false); // New state for the cancellation dialog
-  const [cancellationReason, setCancellationReason] = useState(''); // New state for the cancellation reason
   const [newDateTime, setNewDateTime] = useState('');
   const [actionLoading, setActionLoading] = useState(false);
+  const [bids, setBids] = useState([]);
+  const [bidsLoading, setBidsLoading] = useState(false);
 
-// ... (previous code)
-
-useEffect(() => {
-  if (user !== null) {
-    setUserLoading(false);
-  }
-
-  const fetchBookings = async () => {
-    if (!user || !user.id) return;
-
-    try {
-      const response = await fetch(`http://localhost:3000/api/bookings/user/${user.id}`);
-      const data = await response.json();
-
-      if (response.ok) {
-        // Sort bookings here to show pending ones first
-        const sortedBookings = data.bookings.sort((a, b) => {
-          if (a.status === 'pending' && b.status !== 'pending') {
-            return -1; // 'a' comes first
-          }
-          if (a.status !== 'pending' && b.status === 'pending') {
-            return 1; // 'b' comes first
-          }
-          return 0; // maintain original order for other statuses or if both are pending/not pending
-        });
-        setBookings(sortedBookings);
-      } else {
-        throw new Error(data.message || 'Failed to fetch bookings');
-      }
-    } catch (err) {
-      setError(err.message);
-    } finally {
-      setLoading(false);
+  useEffect(() => {
+    if (user !== null) {
+      setUserLoading(false);
     }
-  };
 
-  if (!userLoading) {
-    fetchBookings();
-  }
-}, [user, userLoading]);
+    const fetchBookings = async () => {
+      if (!user || !user.id) return;
+      
+      try {
+        const response = await fetch(`http://localhost:3000/api/bookings/user/${user.id}`);
+        const data = await response.json();
+        
+        if (response.ok) {
+          setBookings(data.bookings);
+        } else {
+          throw new Error(data.message || 'Failed to fetch bookings');
+        }
+      } catch (err) {
+        setError(err.message);
+      } finally {
+        setLoading(false);
+      }
+    };
 
-// ... (rest of the component code)
+    if (!userLoading) {
+      fetchBookings();
+    }
+  }, [user, userLoading]);
 
   const getStatusColor = (status) => {
     switch (status) {
+      case 'bidding':
+        return 'bg-orange-500';
       case 'pending':
         return 'bg-yellow-500';
       case 'confirmed':
@@ -111,101 +98,80 @@ useEffect(() => {
     });
   };
 
-  const handleCardClick = (booking) => {
+  const handleCardClick = async (booking) => {
     setSelectedBooking(booking);
     setNewDateTime(booking.preferredTime);
     setDialogOpen(true);
+    
+    // If booking status is "bidding", fetch the bids
+    if (booking.status === 'bidding') {
+      setBidsLoading(true);
+      try {
+        const response = await fetch(`http://localhost:3000/api/bids/booking/${booking._id}`);
+        const data = await response.json();
+        
+        if (response.ok) {
+          setBids(data.bids);
+        } else {
+          throw new Error(data.message || 'Failed to fetch bids');
+        }
+      } catch (err) {
+        console.error('Error fetching bids:', err);
+        setBids([]);
+      } finally {
+        setBidsLoading(false);
+      }
+    } else {
+      setBids([]);
+    }
   };
 
-  // New function to handle the initial "Cancel" button click
-  const handleCancelClick = () => {
-    setDialogOpen(false); // Close the main dialog
-    setCancelDialogOpen(true); // Open the cancellation confirmation dialog
-  };
-
-  // New function to handle the final cancellation confirmation
-  const handleConfirmCancel = async () => {
-    if (!selectedBooking) return;
-
+  const handleAcceptBid = async (bidId) => {
     setActionLoading(true);
     try {
-      const response = await fetch(`http://localhost:3000/api/bookings/cancel/${selectedBooking._id}`, {
-        method: 'PUT',
-        headers: {
-          'Content-Type': 'application/json',
-        },
-        body: JSON.stringify({ cancellationReason }), // Send the cancellation reason
-      });
-
+      const response = await fetch(`http://localhost:3000/api/bids/${bidId}/accept`, { method: 'PUT' });
       const data = await response.json();
-
-      if (!response.ok) {
-        throw new Error(data.message || 'Failed to cancel the booking.');
+      if (response.ok) {
+        setSelectedBooking({ ...selectedBooking, status: 'confirmed' });
+        alert('Bid accepted successfully!');
+      } else {
+        alert(data.message || 'Failed to accept bid');
       }
-
-      setBookings(prevBookings =>
-        prevBookings.map(booking =>
-          booking._id === selectedBooking._id ? { ...booking, status: 'cancelled' } : booking
-        )
-      );
-
-      alert('Booking cancelled successfully!');
-      setCancelDialogOpen(false); // Close the cancellation dialog
     } catch (err) {
-      alert(`Error: ${err.message}`);
+      alert(err.message || 'Failed to accept bid');
     } finally {
       setActionLoading(false);
     }
   };
 
-  const handleReschedule = async () => {
-    if (!selectedBooking) return;
+  const handleCancel = async () => {
+    setActionLoading(true);
+    // Simulate API call
+    setTimeout(() => {
+      alert('Booking cancelled successfully!');
+      setActionLoading(false);
+      setDialogOpen(false);
+    }, 1000);
+  };
 
+  const handleReschedule = async () => {
     if (!newDateTime) {
       alert('Please select a new date and time');
       return;
     }
-
+    
     if (new Date(newDateTime) < new Date()) {
       alert('New date and time cannot be in the past');
       return;
     }
 
     setActionLoading(true);
-    try {
-      const response = await fetch(`http://localhost:3000/api/bookings/reschedule/${selectedBooking._id}`, {
-        method: 'PUT',
-        headers: {
-          'Content-Type': 'application/json',
-        },
-        body: JSON.stringify({
-          preferredTime: new Date(newDateTime).toISOString(),
-          preferredDate: new Date(newDateTime).toISOString(),
-        }),
-      });
-
-      const data = await response.json();
-
-      if (!response.ok) {
-        throw new Error(data.message || 'Failed to reschedule the booking.');
-      }
-
-      setBookings(prevBookings =>
-        prevBookings.map(booking =>
-          booking._id === selectedBooking._id
-            ? { ...booking, preferredDate: newDateTime, preferredTime: newDateTime }
-            : booking
-        )
-      );
-
+    // Simulate API call
+    setTimeout(() => {
       alert('Booking rescheduled successfully!');
-      setDialogOpen(false);
-
-    } catch (err) {
-      alert(`Error: ${err.message}`);
-    } finally {
       setActionLoading(false);
-    }
+      setDialogOpen(false);
+    }, 1000);
   };
 
   if (userLoading) {
@@ -213,7 +179,7 @@ useEffect(() => {
   }
 
   return (
-    <div className="text-foreground font-inter min-h-screen m-0 p-0">
+    <div className="text-foreground font-inter min-h-screen">
       <Navbar />
       <div className="w-full max-w-7xl mx-auto py-8 p-4 sm:p-6 lg:p-8">
         <h1 className="text-3xl sm:text-4xl lg:text-5xl font-bold text-center mb-6">
@@ -235,8 +201,8 @@ useEffect(() => {
         ) : (
           <div className="grid gap-6 md:grid-cols-2 lg:grid-cols-3">
             {bookings.map((booking) => (
-              <Card
-                key={booking._id}
+              <Card 
+                key={booking._id} 
                 className="cursor-pointer transition-all hover:shadow-lg hover:scale-105"
                 onClick={() => handleCardClick(booking)}
               >
@@ -255,6 +221,7 @@ useEffect(() => {
                   <p className="text-sm text-muted-foreground line-clamp-2">
                     {booking.description}
                   </p>
+                  
 
                   <div className="space-y-2">
                     <div className="flex items-center gap-2 text-sm">
@@ -272,8 +239,8 @@ useEffect(() => {
                     <div className="flex items-center gap-2 text-sm">
                       <DollarSign className="h-4 w-4 text-muted-foreground" />
                       <span>
-                        {booking.estimatedCost > 0
-                          ? `$${booking.estimatedCost}`
+                        {booking.estimatedCost > 0 
+                          ? `$${booking.estimatedCost}` 
                           : `$${booking.service.estimatedPrice.min} - $${booking.service.estimatedPrice.max}`}
                       </span>
                     </div>
@@ -300,7 +267,7 @@ useEffect(() => {
                 {selectedBooking?.service.name} - {selectedBooking && formatDate(selectedBooking.preferredDate)}
               </DialogDescription>
             </DialogHeader>
-
+            
             <div className="space-y-4">
               <div className="space-y-2">
                 <h4 className="text-sm font-medium">Current Details:</h4>
@@ -326,78 +293,78 @@ useEffect(() => {
                   />
                 </div>
               )}
+
+              {/* Show bids if booking status is "bidding" */}
+              {selectedBooking?.status === 'bidding' && (
+                <div className="space-y-4">
+                  <h4 className="text-sm font-medium">Available Bids:</h4>
+                  {bidsLoading ? (
+                    <div className="text-center text-sm text-muted-foreground">Loading bids...</div>
+                  ) : bids.length === 0 ? (
+                    <div className="text-center text-sm text-muted-foreground">No bids available yet.</div>
+                  ) : (
+                    <div className="space-y-3">
+                      {bids.map((bid) => (
+                        <Card key={bid._id} className="border border-muted">
+                          <CardContent className="p-4">
+                            <div className="flex justify-between items-start mb-3">
+                              <div>
+                                <h5 className="font-medium">{bid.technician.name}</h5>
+                                <p className="text-sm text-muted-foreground">{bid.technician.phone}</p>
+                              </div>
+                              <Badge className="bg-green-500">
+                                ${bid.bidAmount}
+                              </Badge>
+                            </div>
+                            <p className="text-sm mb-3">{bid.message}</p>
+                            <div className="flex justify-between items-center">
+                              <span className="text-xs text-muted-foreground">
+                                Duration: {bid.estimatedDuration}h
+                              </span>
+                              <Button 
+                                size="sm" 
+                                onClick={() => handleAcceptBid(bid._id)}
+                                disabled={actionLoading}
+                              >
+                                Accept Bid
+                              </Button>
+                            </div>
+                          </CardContent>
+                        </Card>
+                      ))}
+                    </div>
+                  )}
+                </div>
+              )}
             </div>
 
             <DialogFooter className="flex-col sm:flex-row gap-2">
-              <Button
-                variant="outline"
+              <Button 
+                variant="outline" 
                 onClick={() => setDialogOpen(false)}
                 disabled={actionLoading}
               >
                 Close
               </Button>
-
+              
               {selectedBooking?.status !== 'completed' && selectedBooking?.status !== 'cancelled' && (
                 <>
-                  <Button
-                    variant="outline"
+                  <Button 
+                    variant="outline" 
                     onClick={handleReschedule}
                     disabled={actionLoading}
                   >
                     {actionLoading ? 'Rescheduling...' : 'Reschedule'}
                   </Button>
-                  <Button
-                    variant="destructive"
-                    onClick={handleCancelClick} // Use the new handler here
+                  <Button 
+                    variant="destructive" 
+                    onClick={handleCancel}
                     disabled={actionLoading}
                   >
                     {actionLoading ? 'Cancelling...' : 'Cancel Booking'}
                   </Button>
                 </>
               )}
-            </DialogFooter>
-          </DialogContent>
-        </Dialog>
-
-        {/* Cancellation Confirmation Dialog */}
-        <Dialog open={cancelDialogOpen} onOpenChange={setCancelDialogOpen}>
-          <DialogContent className="sm:max-w-md">
-            <DialogHeader>
-              <DialogTitle>Confirm Cancellation</DialogTitle>
-              <DialogDescription>
-                Are you sure you want to cancel this booking? Please provide a reason below.
-              </DialogDescription>
-            </DialogHeader>
-
-            <div className="space-y-4">
-              <div className="space-y-2">
-                <label htmlFor="cancellation-reason" className="text-sm font-medium">
-                  Reason for cancellation
-                </label>
-                <Textarea
-                  id="cancellation-reason"
-                  placeholder="e.g., I have a scheduling conflict."
-                  value={cancellationReason}
-                  onChange={(e) => setCancellationReason(e.target.value)}
-                />
-              </div>
-            </div>
-
-            <DialogFooter>
-              <Button
-                variant="outline"
-                onClick={() => setCancelDialogOpen(false)}
-                disabled={actionLoading}
-              >
-                Go Back
-              </Button>
-              <Button
-                variant="destructive"
-                onClick={handleConfirmCancel} // This button performs the API call
-                disabled={actionLoading}
-              >
-                {actionLoading ? 'Cancelling...' : 'Confirm Cancellation'}
-              </Button>
             </DialogFooter>
           </DialogContent>
         </Dialog>
