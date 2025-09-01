@@ -26,7 +26,7 @@ export function ReviewTechnician() {
   useEffect(() => {
     const fetchBooking = async () => {
       try {
-        const res = await fetch(`http://localhost:3000/api/bookings/${bookingId}`);
+        const res = await fetch(`http://localhost:3000/api/bookings/single/${bookingId}`);
         const data = await res.json();
         if (!res.ok) throw new Error(data.message || 'Failed to fetch booking');
         setBooking(data);

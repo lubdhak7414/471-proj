@@ -13,7 +13,7 @@ export function BookingStatus() {
   useEffect(() => {
     const fetchBookingStatus = async () => {
       try {
-        const response = await fetch(`http://localhost:3000/api/bookings/${id}`);
+        const response = await fetch(`http://localhost:3000/api/bookings/single/${id}`);
         const data = await response.json();
 
         if (!response.ok) throw new Error(data.message || 'Failed to fetch booking status');
