@@ -1,4 +1,3 @@
-// booking.model.js
 import mongoose from "mongoose";
 
 const bookingSchema = new mongoose.Schema(
@@ -39,7 +38,7 @@ const bookingSchema = new mongoose.Schema(
         },
         status: {
             type: String,
-            enum: ["pending", "accepted", "in-progress", "completed", "cancelled"],
+            enum: ["pending", "bidding", "accepted", "in-progress", "completed", "cancelled"],
             default: "pending",
         },
         address: {
@@ -60,6 +59,14 @@ const bookingSchema = new mongoose.Schema(
         },
         cancellationReason: {
             type: String,
+        },
+        // New fields for bidding feature
+        isBidding: {
+            type: Boolean,
+            default: false,
+        },
+        biddingDeadline: {
+            type: Date,
         },
     },
     {
