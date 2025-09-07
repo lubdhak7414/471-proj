@@ -20,28 +20,26 @@ export function RepairDiagnosis() {
 
   const handleImageUpload = (e) => {
     const files = Array.from(e.target.files);
-    
-    // Validate number of files first
+
     if (files.length + images.length > 3) {
       setError('You can upload a maximum of 3 images total.');
       return;
     }
-    
-    // Process each file with a new FileReader
+
     files.forEach(file => {
-      if (file.size > 5 * 1024 * 1024) { // 5MB limit
+      if (file.size > 5 * 1024 * 1024) {
         setError(`"${file.name}" is too large. Image size should be less than 5MB.`);
         return;
       }
-      
+
       const reader = new FileReader();
       reader.onload = (event) => {
         setImages(prev => [...prev, event.target.result]);
       };
       reader.readAsDataURL(file);
     });
-    // Clear the input value so the user can upload the same file again if needed
-    e.target.value = ''; 
+
+    e.target.value = '';
   };
 
   const removeImage = (index) => {
@@ -59,22 +57,18 @@ export function RepairDiagnosis() {
     setDiagnosis(null);
 
     try {
+      const payload = { description: description.trim() };
+      if (images.length > 0) payload.images = images;
+
       const response = await fetch('http://localhost:3000/api/diagnosis', {
         method: 'POST',
-        headers: {
-          'Content-Type': 'application/json',
-        },
-        body: JSON.stringify({
-          description: description.trim(),
-          images: images
-        }),
+        headers: { 'Content-Type': 'application/json' },
+        body: JSON.stringify(payload),
       });
 
       const data = await response.json();
 
-      if (!response.ok) {
-        throw new Error(data.message || 'Failed to get diagnosis');
-      }
+      if (!response.ok) throw new Error(data.message || 'Failed to get diagnosis');
 
       setDiagnosis(data.diagnosis);
     } catch (err) {
@@ -84,7 +78,6 @@ export function RepairDiagnosis() {
     }
   };
 
-  // Helper functions for badge colors (already good)
   const getUrgencyColor = (urgency) => {
     switch (urgency?.toLowerCase()) {
       case 'emergency': return 'bg-red-600 text-white';
@@ -106,10 +99,7 @@ export function RepairDiagnosis() {
 
   const handleBookService = () => {
     navigate('/service-booking', {
-      state: {
-        diagnosis: diagnosis,
-        description: description
-      }
+      state: { diagnosis, description }
     });
   };
 
@@ -148,7 +138,7 @@ export function RepairDiagnosis() {
                 </label>
                 <Textarea
                   id="problem-description"
-                  placeholder="Describe the problem in detail... (e.g., My washing machine makes loud noise during spin cycle and clothes come out still wet)"
+                  placeholder="Describe the problem in detail..."
                   value={description}
                   onChange={(e) => setDescription(e.target.value)}
                   rows={4}
@@ -250,14 +240,18 @@ export function RepairDiagnosis() {
                       <DollarSign className="h-4 w-4 text-green-600" />
                       <div>
                         <p className="text-xs text-gray-500">Estimated Cost</p>
-                        <p className="font-medium">{diagnosis.estimatedCost}</p>
+                        <p className="font-medium">{diagnosis.estimatedCost?.range}</p>
+                        <p className="text-xs text-gray-400 whitespace-pre-line">{diagnosis.estimatedCost?.notes}</p>
                       </div>
                     </div>
                     <div className="flex items-center gap-2">
                       <Clock className="h-4 w-4 text-blue-600" />
                       <div>
                         <p className="text-xs text-gray-500">Time Required</p>
-                        <p className="font-medium">{diagnosis.estimatedTime}</p>
+                        <p className="font-medium">
+                          DIY: {diagnosis.estimatedTime?.diy} <br />
+                          Pro: {diagnosis.estimatedTime?.professional}
+                        </p>
                       </div>
                     </div>
                   </div>
@@ -272,42 +266,63 @@ export function RepairDiagnosis() {
                     </Badge>
                   </div>
 
-                  {/* Details Sections */}
+                  {/* Required Items */}
                   {diagnosis.requiredItems && (
                     <div>
                       <h4 className="font-medium flex items-center gap-2 mb-2">
                         <Wrench className="h-4 w-4" />
                         Required Tools/Parts
                       </h4>
-                      <p className="text-sm text-gray-700 bg-gray-50 p-3 rounded">
-                        {diagnosis.requiredItems}
-                      </p>
+                      <div className="text-sm text-gray-700 bg-gray-50 p-3 rounded space-y-2">
+                        <div>
+                          <strong>Tools:</strong>
+                          <ul className="list-disc list-inside ml-4">
+                            {diagnosis.requiredItems?.tools?.map((tool, i) => (
+                              <li key={`tool-${i}`}>{tool}</li>
+                            ))}
+                          </ul>
+                        </div>
+                        <div>
+                          <strong>Parts:</strong>
+                          <ul className="list-disc list-inside ml-4">
+                            {diagnosis.requiredItems?.parts?.map((part, i) => (
+                              <li key={`part-${i}`}>{part}</li>
+                            ))}
+                          </ul>
+                        </div>
+                      </div>
                     </div>
                   )}
 
+                  {/* Safety Concerns */}
                   {diagnosis.safetyConcerns && (
                     <div>
                       <h4 className="font-medium flex items-center gap-2 mb-2">
                         <Shield className="h-4 w-4 text-red-500" />
                         Safety Concerns
                       </h4>
-                      <p className="text-sm text-gray-700 bg-red-50 p-3 rounded border border-red-200">
-                        {diagnosis.safetyConcerns}
-                      </p>
+                      <ul className="list-disc text-sm text-gray-700 bg-red-50 p-3 rounded border border-red-200 ml-4 space-y-1">
+                        {diagnosis.safetyConcerns.map((item, i) => (
+                          <li key={`safety-${i}`}>{item}</li>
+                        ))}
+                      </ul>
                     </div>
                   )}
 
+                  {/* Preventive Tips */}
                   {diagnosis.preventiveTips && (
                     <div>
                       <h4 className="font-medium mb-2">Prevention Tips</h4>
-                      <p className="text-sm text-gray-700 bg-green-50 p-3 rounded border border-green-200">
-                        {diagnosis.preventiveTips}
-                      </p>
+                      <ul className="list-disc text-sm text-gray-700 bg-green-50 p-3 rounded border border-green-200 ml-4 space-y-1">
+                        {diagnosis.preventiveTips.map((tip, i) => (
+                          <li key={`tip-${i}`}>{tip}</li>
+                        ))}
+                      </ul>
                     </div>
                   )}
 
-                  {/* Action Button */}
-                  <Button 
+                  {/* CTA */}
+                  <Button
                     onClick={handleBookService}
                     className="w-full bg-green-600 hover:bg-green-700"
                   >
