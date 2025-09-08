@@ -5,7 +5,8 @@ import Footer from './sections/Footer';
 import { Input } from '@/components/ui/input';
 import { Button } from '@/components/ui/button';
 import { Card, CardContent, CardDescription, CardFooter, CardHeader, CardTitle } from '@/components/ui/card';
-import { Textarea } from '@/components/ui/textarea';
+import { Textarea } from '@/components/ui/textarea'; // For issue description
+import { useNavigate } from 'react-router-dom'; // add this line at the top
 
 export function ServiceBooking() {
   const { user } = useAuth(); // Use the hook to get the user object
@@ -20,6 +21,8 @@ export function ServiceBooking() {
   const [error, setError] = useState('');
   const [services, setServices] = useState([]);
   const [estimatedCost, setEstimatedCost] = useState(0);
+  const [biddingDeadline, setBiddingDeadline] = useState(''); // State for bidding deadline
+  const navigate = useNavigate(); 
 
   useEffect(() => {
     // Check if user data has been loaded
@@ -72,7 +75,7 @@ export function ServiceBooking() {
     setError('');
 
     const userID = user.id; // Use user.id instead of user._id
-    const technicianID = '689dbc1e7f68c9bd1ffb7cdd'; // Hardcoded technician ID
+    const technicianID = null; // No technician is assigned initially for bidding
 
     try {
       const response = await fetch('http://localhost:3000/api/bookings/', {
@@ -82,7 +85,7 @@ export function ServiceBooking() {
         },
         body: JSON.stringify({
           user: userID,
-          technician: technicianID,
+          technician: technicianID,  // No technician assigned during bidding
           service: selectedService,
           description: issueDescription,
           images,
@@ -91,16 +94,17 @@ export function ServiceBooking() {
           urgency,
           address,
           estimatedCost,
+          isBidding: true,  // Always enabled bidding
+          biddingDeadline: biddingDeadline || undefined // optional ISO datetime
         }),
       });
 
       const data = await response.json();
+      if (!response.ok) throw new Error(data.message || 'Booking failed. Please try again.');
 
-      if (!response.ok) {
-        throw new Error(data.message || 'Booking failed. Please try again.');
-      }
+      // Redirect to booking status page for the new booking
+      navigate(`/booking-status/${data._id}`);
 
-      alert('Booking created successfully!');
     } catch (err) {
       setError(err.message);
     } finally {
@@ -206,6 +210,16 @@ export function ServiceBooking() {
                     type="file"
                     onChange={(e) => setImages([...images, ...e.target.files])}
                     multiple
+                  />
+                </div>
+                {/* Bidding Deadline */}
+                <div className="grid gap-2">
+                  <label htmlFor="biddingDeadline">Bidding Deadline (Optional)</label>
+                  <Input
+                    id="biddingDeadline"
+                    type="datetime-local"
+                    value={biddingDeadline}
+                    onChange={(e) => setBiddingDeadline(e.target.value)}
                   />
                 </div>
                 {/* Error Message */}

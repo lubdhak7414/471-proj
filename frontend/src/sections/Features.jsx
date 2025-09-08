@@ -64,8 +64,8 @@ function Features() {
 
         </div> 
 
-      <div class="circlePosition w-full h-full bg-[#36a0d142] rounded-[100%] absolute -z-10 blur-[100px] flex justify-center items-center">
-        <div class="circle w-68 h-68 bg-[#26b9fd42] rounded-[100%]" />
+      <div className="circlePosition w-full h-full bg-[#36a0d142] rounded-[100%] absolute -z-10 blur-[100px] flex justify-center items-center">
+        <div className="circle w-68 h-68 bg-[#26b9fd42] rounded-[100%]" />
       </div>
 
       <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 py-12">

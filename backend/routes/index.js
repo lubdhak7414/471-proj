@@ -9,6 +9,7 @@ import invoiceRoutes from "./invoice.routes.js";
 import warrantyRoutes from "./warranty.routes.js";
 import chatRoutes from "./chat.routes.js";
 import bidRoutes from "./bid.routes.js";
+import diagnosisRoutes from "./ai.routes.js";
 
 const router = express.Router();
 
@@ -23,5 +24,7 @@ router.use("/invoices", invoiceRoutes);
 router.use("/warranties", warrantyRoutes);
 router.use("/chat", chatRoutes);
 router.use("/bids", bidRoutes);
+router.use("/diagnosis", diagnosisRoutes);
+
 
 export default router;

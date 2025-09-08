@@ -26,6 +26,12 @@ const UserMenu = ({ onItemClick }) => {
     logout(); // Call the logout function from AuthContext to clear user data
     navigate('/'); // Redirect to home page after logout
   };
+  const handleSearchTechnician = ()=>{
+    navigate('/search');
+  }
+  const handlePayment=()=>{
+    navigate('/payment')
+  }
 
   return (
     <DropdownMenu>
@@ -56,6 +62,12 @@ const UserMenu = ({ onItemClick }) => {
         <DropdownMenuSeparator />
         <DropdownMenuItem onClick={() => onItemClick?.('profile')}>
           Profile
+        </DropdownMenuItem>
+        <DropdownMenuItem onClick={handleSearchTechnician}>
+          Search Technician
+        </DropdownMenuItem>
+        <DropdownMenuItem onClick={handlePayment}>
+          Payment-Gateway
         </DropdownMenuItem>
         <DropdownMenuItem onClick={() => onItemClick?.('settings')}>
           Settings

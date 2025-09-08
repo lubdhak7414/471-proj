@@ -13,12 +13,14 @@ export const createBooking = async (req, res) => {
             preferredTime,
             urgency,
             address,
-            estimatedCost
+            estimatedCost,
+            isBidding,         // <-- accept this
+            biddingDeadline    // <-- accept this
         } = req.body;
 
-        const booking = new Booking({
+        // Create booking data, conditionally include biddingDeadline and technician
+        const bookingData = {
             user,
-            technician,
             service,
             description,
             images,
@@ -26,8 +28,18 @@ export const createBooking = async (req, res) => {
             preferredTime,
             urgency,
             address,
-            estimatedCost
-        });
+            estimatedCost,
+            isBidding: !!isBidding, // Ensure it's a boolean
+            // Include biddingDeadline only if provided
+            ...(biddingDeadline ? { biddingDeadline: new Date(biddingDeadline) } : {}),
+            // Only include technician if not in bidding mode
+            ...(isBidding ? {} : { technician })
+        };
+
+        // Set status to 'bidding' if isBidding is true
+        if (isBidding) bookingData.status = "bidding";
+
+        const booking = new Booking(bookingData);
 
         await booking.save();
         res.status(201).json(booking);
@@ -341,6 +353,21 @@ export const bulkCancelBookings = async (req, res) => {
     }
 };
 
+
+// Get live booking status 
+export const getBookingStatus = async (req, res) => {
+    try {
+        const booking = await Booking.findById(req.params.id).select("status"); // only return status
+        if (!booking) {
+            return res.status(404).json({ message: "Booking not found" });
+        }
+        res.status(200).json({ status: booking.status });
+    } catch (error) {
+        console.error("Get Booking Status Error:", error);
+        res.status(500).json({ message: "Server Error" });
+    }
+};
+
 // Get all bookings for a specific user
 export const getUserBookings = async (req, res) => {
     try {
@@ -366,3 +393,28 @@ export const getUserBookings = async (req, res) => {
         res.status(500).json({ message: "Server Error" });
     }
 };
+
+// Get all bookings with bidding enabled
+export const getBiddingBookings = async (req, res) => {
+    try {
+        // Fetch all bookings where 'isBidding' is true
+        const biddingBookings = await Booking.find({ isBidding: true })
+            .populate("user")
+            .populate("technician")
+            .populate("service");
+
+        if (!biddingBookings || biddingBookings.length === 0) {
+            return res.status(404).json({ message: "No bookings found with bidding enabled" });
+        }
+
+        res.status(200).json({
+            message: "Bidding bookings retrieved successfully",
+            count: biddingBookings.length,
+            bookings: biddingBookings
+        });
+    } catch (error) {
+        console.error("Get Bidding Bookings Error:", error);
+        res.status(500).json({ message: "Server Error" });
+    }
+};
+
