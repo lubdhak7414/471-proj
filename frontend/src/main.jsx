@@ -17,6 +17,11 @@ import './index.css';
 import Layout from './Layout.jsx'; //
 import AdminDashboard from './AdminDashboard.jsx';
 import {RepairDiagnosis} from './RepairDiagnosis.jsx';
+import SearchTechnicians from './components/SearchTechnician.jsx';
+import PaymentGateway from './components/PaymentGateway.jsx';
+import TechnicianDashboard from './components/TechnicianDashboard.jsx';
+import { SocketProvider } from './context/socket.provider.jsx'; // Import SocketProvider
+
 
 // Define your routes
 const router = createBrowserRouter([
@@ -24,6 +29,18 @@ const router = createBrowserRouter([
     path: '/',
     element: <LandingPage />,
     errorElement: <NotFoundPage />,
+  },
+  {
+    path:'/search',
+    element: <SearchTechnicians />
+  },
+  {
+    path:'/dashboard',
+    element: <TechnicianDashboard />
+  },
+    {
+    path:'/payment',
+    element: <PaymentGateway />
   },
   {
     path: '/technician-onboarding/:userId',
@@ -71,6 +88,11 @@ const router = createBrowserRouter([
       {
         path: '/my-bids',
         element: <TechnicianBidsPage />,
+      },
+      {
+        path: '/dashboard',
+        element: <TechnicianDashboard />,
+
       }
     ],
   },
@@ -95,9 +117,11 @@ const router = createBrowserRouter([
 ReactDOM.createRoot(document.getElementById('root')).render(
   <React.StrictMode>
     <AuthProvider>
+      <SocketProvider>
       <Layout>
         <RouterProvider router={router} />
       </Layout>
+      </SocketProvider>
     </AuthProvider>
   </React.StrictMode>
 );

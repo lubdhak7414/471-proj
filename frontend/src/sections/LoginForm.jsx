@@ -54,6 +54,9 @@ export function LoginForm({ onSwitchToRegister }) {
       login(user, token);
       if (user.role === 'admin') {
         navigate('/admin-dashboard'); // Redirect to admin dashboard if role is admin
+      }
+      else if (user.role === 'technician'){
+        navigate('/dashboard')
       } else {
         navigate('/service-booking'); // Redirect to booking page for regular user
       }
