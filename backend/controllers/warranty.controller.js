@@ -1,5 +1,11 @@
 // warranty.controller.js
 import Warranty from "../models/warranty.model.js";
+import Booking from "../models/booking.model.js";
+import Invoice from "../models/invoice.model.js";
+import Technician from "../models/technician.model.js";
+import fs from 'fs-extra';
+import path from 'path';
+import PDFDocument from 'pdfkit';
 
 // Generate warranty number helper
 const generateWarrantyNumber = () => {
@@ -9,94 +15,121 @@ const generateWarrantyNumber = () => {
 };
 
 // Create warranty card
+export const autoCreateWarranty = async (bookingId) => {
+    // Programmatic creation used by booking completion flow
+    const booking = await Booking.findById(bookingId)
+        .populate('user')
+        .populate({ path: 'technician', populate: { path: 'user', select: 'name email phone' } })
+        .populate('service');
+
+    if (!booking || booking.status !== 'completed') {
+        return null;
+    }
+
+    const invoice = await Invoice.findOne({ booking: bookingId });
+    if (!invoice) return null;
+
+    // Avoid duplicate warranties
+    const existingWarranty = await Warranty.findOne({ booking: bookingId });
+    if (existingWarranty) return existingWarranty;
+
+    const warrantyNumber = generateWarrantyNumber();
+
+    const getWarrantyPeriod = (category) => {
+        const periods = {
+            'electronics': { duration: 90, unit: 'days' },
+            'appliances': { duration: 6, unit: 'months' },
+            'plumbing': { duration: 30, unit: 'days' },
+            'electrical': { duration: 60, unit: 'days' }
+        };
+        return periods[category] || { duration: 30, unit: 'days' };
+    };
+
+    const warrantyPeriod = getWarrantyPeriod(booking.service.category);
+
+    const warranty = new Warranty({
+        booking: bookingId,
+        invoice: invoice._id,
+        warrantyNumber,
+        user: booking.user._id,
+        technician: booking.technician?._id || null,
+        service: {
+            name: booking.service.name,
+            category: booking.service.category
+        },
+        warrantyPeriod,
+        coverageDetails: [
+            { item: 'Parts Replacement', description: 'Defective parts will be replaced free of charge', covered: true },
+            { item: 'Labor Charges', description: 'Labor costs for warranty repairs', covered: true }
+        ],
+        terms: [
+            'Warranty is valid only for defects in workmanship',
+            'Physical damage or misuse voids warranty',
+            'Original invoice must be presented for warranty claims',
+            'Warranty is non-transferable'
+        ],
+        serviceDate: booking.completedAt,
+        qrCode: `warranty-${warrantyNumber}`
+    });
+
+    await warranty.save();
+
+    // Try to generate a PDF and store locally
+    try {
+        const uploadsDir = path.join(process.cwd(), 'uploads', 'warranties');
+        await fs.ensureDir(uploadsDir);
+        const filename = `${warranty.warrantyNumber}.pdf`;
+        const filePath = path.join(uploadsDir, filename);
+
+        // Create a simple PDF
+        const doc = new PDFDocument({ size: 'A4', margin: 50 });
+        const stream = fs.createWriteStream(filePath);
+        doc.pipe(stream);
+
+        doc.fontSize(20).text('Warranty Certificate', { align: 'center' });
+        doc.moveDown();
+        doc.fontSize(12).text(`Warranty Number: ${warranty.warrantyNumber}`);
+        doc.text(`Service: ${warranty.service.name} (${warranty.service.category})`);
+        doc.text(`Service Date: ${warranty.serviceDate ? warranty.serviceDate.toDateString() : ''}`);
+        doc.text(`Warranty Period: ${warranty.warrantyPeriod.duration} ${warranty.warrantyPeriod.unit}`);
+        doc.moveDown();
+        doc.text('Coverage:');
+        warranty.coverageDetails.forEach(cd => {
+            doc.text(`- ${cd.item}: ${cd.description} (${cd.covered ? 'Covered' : 'Not Covered'})`);
+        });
+
+        doc.moveDown();
+        doc.text('Terms & Conditions:');
+        warranty.terms.forEach(t => doc.text(`- ${t}`));
+
+        doc.end();
+
+        await new Promise((resolve, reject) => {
+            stream.on('finish', resolve);
+            stream.on('error', reject);
+        });
+
+        const pdfUrl = `/uploads/warranties/${filename}`;
+        warranty.pdfUrl = pdfUrl;
+        await warranty.save();
+    } catch (pdfErr) {
+        console.error('Failed to generate warranty PDF:', pdfErr);
+    }
+
+    return warranty;
+};
+
 export const createWarranty = async (req, res) => {
     try {
         const { bookingId } = req.params;
-        
-        // Get booking and invoice
-        const booking = await Booking.findById(bookingId)
-            .populate('user')
-            .populate('technician')
-            .populate('service');
-
-        if (!booking || booking.status !== 'completed') {
-            return res.status(400).json({ 
-                message: "Booking not found or not completed" 
-            });
+        const warranty = await autoCreateWarranty(bookingId);
+        if (!warranty) {
+            return res.status(400).json({ message: 'Unable to create warranty for this booking' });
         }
-
-        const invoice = await Invoice.findOne({ booking: bookingId });
-        if (!invoice) {
-            return res.status(400).json({ 
-                message: "Invoice not found for this booking" 
-            });
-        }
-
-        // Check if warranty already exists
-        const existingWarranty = await Warranty.findOne({ booking: bookingId });
-        if (existingWarranty) {
-            return res.status(400).json({ 
-                message: "Warranty already exists for this booking" 
-            });
-        }
-
-        const warrantyNumber = generateWarrantyNumber();
-        
-        // Default warranty terms based on service category
-        const getWarrantyPeriod = (category) => {
-            const periods = {
-                'electronics': { duration: 90, unit: 'days' },
-                'appliances': { duration: 6, unit: 'months' },
-                'plumbing': { duration: 30, unit: 'days' },
-                'electrical': { duration: 60, unit: 'days' }
-            };
-            return periods[category] || { duration: 30, unit: 'days' };
-        };
-
-        const warrantyPeriod = getWarrantyPeriod(booking.service.category);
-
-        const warranty = new Warranty({
-            booking: bookingId,
-            invoice: invoice._id,
-            warrantyNumber,
-            user: booking.user._id,
-            technician: booking.technician._id,
-            service: {
-                name: booking.service.name,
-                category: booking.service.category
-            },
-            warrantyPeriod,
-            coverageDetails: [
-                {
-                    item: "Parts Replacement",
-                    description: "Defective parts will be replaced free of charge",
-                    covered: true
-                },
-                {
-                    item: "Labor Charges",
-                    description: "Labor costs for warranty repairs",
-                    covered: true
-                }
-            ],
-            terms: [
-                "Warranty is valid only for defects in workmanship",
-                "Physical damage or misuse voids warranty",
-                "Original invoice must be presented for warranty claims",
-                "Warranty is non-transferable"
-            ],
-            serviceDate: booking.completedAt,
-            qrCode: `warranty-${warrantyNumber}` // Mock QR code
-        });
-
-        await warranty.save();
-
-        res.status(201).json({
-            message: "Warranty card created successfully",
-            warranty
-        });
+        res.status(201).json({ message: 'Warranty created', warranty });
     } catch (error) {
-        console.error("Create Warranty Error:", error);
-        res.status(500).json({ message: "Server Error" });
+        console.error('Create Warranty Error:', error);
+        res.status(500).json({ message: 'Server Error' });
     }
 };
 
@@ -220,4 +253,3 @@ export const generateWarrantyPDF = async (req, res) => {
         res.status(500).json({ message: "Server Error" });
     }
 };
-
