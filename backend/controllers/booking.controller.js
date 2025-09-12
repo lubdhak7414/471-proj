@@ -3,52 +3,95 @@ import Booking from "../models/booking.model.js";
 // Create a new booking
 export const createBooking = async (req, res) => {
     try {
+        console.log('=== DEBUG: Create Booking ===');
+        console.log('req.body:', req.body);
+        console.log('req.files:', req.files);
+
         const {
             user,
             technician,
             service,
             description,
-            images,
             preferredDate,
             preferredTime,
             urgency,
             address,
-            estimatedCost,
-            isBidding,         // <-- accept this
-            biddingDeadline    // <-- accept this
+            estimatedCost
         } = req.body;
 
-        // Create booking data, conditionally include biddingDeadline and technician
-        const bookingData = {
+        console.log('Destructured data:', {
+            user, technician, service, description, preferredDate, preferredTime, urgency, address, estimatedCost
+        });
+
+        // Parse dates properly
+        let parsedPreferredDate = preferredDate;
+        let parsedPreferredTime = preferredTime;
+
+        if (preferredDate) {
+            parsedPreferredDate = new Date(preferredDate);
+            if (isNaN(parsedPreferredDate.getTime())) {
+                console.log('Invalid preferredDate format:', preferredDate);
+                return res.status(400).json({ message: "Invalid preferredDate format" });
+            }
+        }
+
+        if (preferredTime) {
+            parsedPreferredTime = new Date(preferredTime);
+            if (isNaN(parsedPreferredTime.getTime())) {
+                console.log('Invalid preferredTime format:', preferredTime);
+                return res.status(400).json({ message: "Invalid preferredTime format" });
+            }
+        }
+        
+
+        
+        if (!mongoose.Types.ObjectId.isValid(user)) {
+            console.log('Invalid user ObjectId:', user);
+            return res.status(400).json({ message: "Invalid user ID format" });
+        }
+
+        if (!mongoose.Types.ObjectId.isValid(service)) {
+            console.log('Invalid service ObjectId:', service);
+            return res.status(400).json({ message: "Invalid service ID format" });
+        }
+
+        if (technician && !mongoose.Types.ObjectId.isValid(technician)) {
+            console.log('Invalid technician ObjectId:', technician);
+            return res.status(400).json({ message: "Invalid technician ID format" });
+        }
+
+        // Handle uploaded images
+        const images = req.files?.map((file) => ({
+            url: `/uploads/${file.filename}`,
+            alt: file.originalname,
+        })) || [];
+
+        console.log('Processed images:', images);
+
+        const booking = new Booking({
             user,
+            technician: technician || null,
             service,
             description,
             images,
-            preferredDate,
-            preferredTime,
-            urgency,
+            preferredDate: parsedPreferredDate,
+            preferredTime: parsedPreferredTime,
+            urgency: urgency || "medium",
             address,
-            estimatedCost,
-            isBidding: !!isBidding, // Ensure it's a boolean
-            // Include biddingDeadline only if provided
-            ...(biddingDeadline ? { biddingDeadline: new Date(biddingDeadline) } : {}),
-            // Only include technician if not in bidding mode
-            ...(isBidding ? {} : { technician })
-        };
+            estimatedCost: estimatedCost ? parseFloat(estimatedCost) : null
+        });
 
-        // Set status to 'bidding' if isBidding is true
-        if (isBidding) bookingData.status = "bidding";
-
-        const booking = new Booking(bookingData);
+        console.log('Booking object before save:', booking);
 
         await booking.save();
+        console.log('Booking saved successfully:', booking._id);
+
         res.status(201).json(booking);
     } catch (error) {
         console.error("Create Booking Error:", error);
-        res.status(500).json({ message: "Server Error" });
+        res.status(500).json({ message: "Server Error", error: error.message });
     }
 };
-
 // Get booking by ID
 export const getBookingById = async (req, res) => {
     try {
