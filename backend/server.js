@@ -3,10 +3,6 @@ import dotenv from "dotenv";
 import connectDB from "./config/db.js";
 import apiRoutes from "./routes/index.js";
 import cors from "cors";  // Import the cors package
-
-
-
-//Intesar
 import technicianRoutes from './routes/TechnicianRoutes.js'
 import BookingRoutes from './routes/BookingRoutes.js'
 import Message from './models/message.model.js';
@@ -14,9 +10,6 @@ import MessageRoute from './routes/MessageRoutes.js';
 
 import {createServer} from 'http';
 import {Server} from 'socket.io';
-
-
-
 
 dotenv.config();
 console.log("Loaded PORT from .env:", process.env.PORT);
@@ -37,6 +30,8 @@ app.use(express.json());
 app.use('/api/technicians', technicianRoutes);
 app.use('/api/techDashboard',BookingRoutes);
 app.use('/api/messages',MessageRoute);
+app.use(express.json({ limit: '10mb' }));
+
 // Connect to DB
 connectDB();
 

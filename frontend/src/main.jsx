@@ -17,15 +17,11 @@ import './index.css';
 import Layout from './Layout.jsx'; //
 import AdminDashboard from './AdminDashboard.jsx';
 import {RepairDiagnosis} from './RepairDiagnosis.jsx';
-
-
-
-
-//Intesar
 import SearchTechnicians from './components/SearchTechnician.jsx';
 import PaymentGateway from './components/PaymentGateway.jsx';
 import TechnicianDashboard from './components/TechnicianDashboard.jsx';
 import { SocketProvider } from './context/socket.provider.jsx'; // Import SocketProvider
+
 
 // Define your routes
 const router = createBrowserRouter([
@@ -96,6 +92,7 @@ const router = createBrowserRouter([
       {
         path: '/dashboard',
         element: <TechnicianDashboard />,
+
       }
     ],
   },
