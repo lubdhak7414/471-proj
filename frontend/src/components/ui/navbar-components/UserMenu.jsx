@@ -10,28 +10,25 @@ import {
 } from '@/components/ui/dropdown-menu';
 import { Avatar, AvatarFallback, AvatarImage } from '@/components/ui/avatar';
 import { ChevronDownIcon } from 'lucide-react';
-import { useNavigate } from 'react-router-dom'; // Import useNavigate
-import { useAuth } from '@/context/AuthContext'; // Import useAuth to get user data
+import { useNavigate } from 'react-router-dom';
+import { useAuth } from '@/context/AuthContext';
 
-const UserMenu = ({ onItemClick }) => {
-  const navigate = useNavigate(); // Initialize useNavigate
-  const { user, logout } = useAuth(); // Get user data and logout function from AuthContext
+const UserMenu = () => {
+  const navigate = useNavigate();
+  const { user, logout } = useAuth();
 
-  // Fallback user data if not available
   const userName = user?.name || 'John Doe';
   const userEmail = user?.email || 'john@example.com';
-  const userAvatar = user?.picture || ''; // Default avatar or use a placeholder
+  const userAvatar = user?.picture || '';
 
   const handleLogout = () => {
-    logout(); // Call the logout function from AuthContext to clear user data
-    navigate('/'); // Redirect to home page after logout
+    logout();
+    navigate('/');
   };
-  const handleSearchTechnician = ()=>{
-    navigate('/search');
-  }
-  const handlePayment=()=>{
-    navigate('/payment')
-  }
+
+  const handleProfile = () => {
+    navigate('/profile');
+  };
 
   return (
     <DropdownMenu>
@@ -60,20 +57,8 @@ const UserMenu = ({ onItemClick }) => {
           </div>
         </DropdownMenuLabel>
         <DropdownMenuSeparator />
-        <DropdownMenuItem onClick={() => onItemClick?.('profile')}>
+        <DropdownMenuItem onClick={handleProfile}>
           Profile
-        </DropdownMenuItem>
-        <DropdownMenuItem onClick={handleSearchTechnician}>
-          Search Technician
-        </DropdownMenuItem>
-        <DropdownMenuItem onClick={handlePayment}>
-          Payment-Gateway
-        </DropdownMenuItem>
-        <DropdownMenuItem onClick={() => onItemClick?.('settings')}>
-          Settings
-        </DropdownMenuItem>
-        <DropdownMenuItem onClick={() => onItemClick?.('billing')}>
-          Billing
         </DropdownMenuItem>
         <DropdownMenuSeparator />
         <DropdownMenuItem onClick={handleLogout}>

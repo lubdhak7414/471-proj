@@ -21,7 +21,7 @@ import SearchTechnicians from './components/SearchTechnician.jsx';
 import PaymentGateway from './components/PaymentGateway.jsx';
 import TechnicianDashboard from './components/TechnicianDashboard.jsx';
 import { SocketProvider } from './context/socket.provider.jsx'; // Import SocketProvider
-
+import ProfilePage from './ProfilePage.jsx';
 
 // Define your routes
 const router = createBrowserRouter([
@@ -106,10 +106,11 @@ const router = createBrowserRouter([
 
 
   ],
-}
-
-
-
+  },
+  {
+    path: '/profile',
+    element: <ProfilePage />,
+  },
 ]);
 
 // Wrap the RouterProvider with the AuthProvider to provide authentication context globally
