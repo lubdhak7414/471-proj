@@ -4,6 +4,8 @@ import Navbar from './sections/navbar';
 import Footer from './sections/Footer';
 import { Card, CardHeader, CardTitle, CardContent } from '@/components/ui/card';
 
+const apiUrl = import.meta.env.VITE_API_URL;
+
 export function BookingStatus() {
   const { id } = useParams(); // booking id from URL
   const [booking, setBooking] = useState(null);
@@ -13,7 +15,7 @@ export function BookingStatus() {
   useEffect(() => {
     const fetchBookingStatus = async () => {
       try {
-        const response = await fetch(`http://localhost:3000/api/bookings/single/${id}`);
+        const response = await fetch(`${apiUrl}/bookings/single/${id}`);
         const data = await response.json();
 
         if (!response.ok) throw new Error(data.message || 'Failed to fetch booking status');

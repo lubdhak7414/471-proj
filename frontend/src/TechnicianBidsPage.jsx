@@ -6,6 +6,8 @@ import { Badge } from '@/components/ui/badge';
 import { Calendar, DollarSign, AlertCircle, CheckCircle, XCircle } from 'lucide-react';
 import { useNavigate } from 'react-router-dom';
 
+const apiUrl = import.meta.env.VITE_API_URL;
+
 export function TechnicianBidsPage() {
   const { user, token, logout } = useAuth(); // Fetch user data from context and add logout
   const [bids, setBids] = useState([]); // Technician's bids
@@ -21,7 +23,7 @@ export function TechnicianBidsPage() {
       setSuccess('');
 
       try {
-        const response = await fetch(`http://localhost:3000/api/bids/technician/${user.id}`, {
+        const response = await fetch(`${apiUrl}/bids/technician/${user.id}`, {
           headers: {
             Authorization: `Bearer ${token}`,
           },

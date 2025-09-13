@@ -25,6 +25,8 @@ export function LoginForm({ onSwitchToRegister }) {
 
   // 3. Use login from AuthContext
   const { login } = useAuth();  // Destructure login function from AuthContext
+  const apiUrl = import.meta.env.VITE_API_URL; // <-- Add this line
+  console.log("API URL:", apiUrl); // <-- Debugging line to check the API URL
 
   // 4. Create an async function to handle the form submission
   const handleSubmit = async (event) => {
@@ -33,7 +35,7 @@ export function LoginForm({ onSwitchToRegister }) {
     setError('');
 
     try {
-      const response = await fetch('http://localhost:3000/api/users/login', {
+      const response = await fetch(`${apiUrl}/users/login`, { // <-- Use backticks and apiUrl variable
         method: 'POST',
         headers: {
           'Content-Type': 'application/json',

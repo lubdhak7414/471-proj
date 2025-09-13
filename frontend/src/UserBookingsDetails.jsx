@@ -21,6 +21,7 @@ export function UserBookings() {
   const [actionLoading, setActionLoading] = useState(false);
   const [bids, setBids] = useState([]);
   const [bidsLoading, setBidsLoading] = useState(false);
+  const apiUrl = import.meta.env.VITE_API_URL;
 
   useEffect(() => {
     if (user !== null) {
@@ -31,7 +32,7 @@ export function UserBookings() {
       if (!user || !user.id) return;
       
       try {
-        const response = await fetch(`http://localhost:3000/api/bookings/user/${user.id}`);
+        const response = await fetch(`${apiUrl}/bookings/user/${user.id}`);
         const data = await response.json();
         
         if (response.ok) {
@@ -110,7 +111,7 @@ export function UserBookings() {
     if (booking.isBidding || booking.status === 'bidding') {
       setBidsLoading(true);
       try {
-        const response = await fetch(`http://localhost:3000/api/bids/booking/${booking._id}`);
+        const response = await fetch(`${apiUrl}/bids/booking/${booking._id}`);
         const data = await response.json();
         
         if (response.ok) {
@@ -132,7 +133,7 @@ export function UserBookings() {
   const handleAcceptBid = async (bidId) => {
     setActionLoading(true);
     try {
-      const response = await fetch(`http://localhost:3000/api/bids/${bidId}/accept`, { method: 'PUT' });
+      const response = await fetch(`${apiUrl}/bids/${bidId}/accept`, { method: 'PUT' });
       const data = await response.json();
       if (response.ok) {
         setSelectedBooking({ ...selectedBooking, status: 'accepted' });
@@ -160,11 +161,9 @@ export function UserBookings() {
     
     setActionLoading(true);
     try {
-      const response = await fetch(`http://localhost:3000/api/bookings/${selectedBooking._id}/cancel`, {
+      const response = await fetch(`${apiUrl}/bookings/${selectedBooking._id}/cancel`, {
         method: 'PUT',
-        headers: {
-          'Content-Type': 'application/json',
-        },
+        headers: { 'Content-Type': 'application/json' },
         body: JSON.stringify({ cancellationReason: 'Cancelled by user' })
       });
       

@@ -30,10 +30,12 @@ ChartJS.register(
   LineElement
 );
 
+const apiUrl = import.meta.env.VITE_API_URL;
+
 const endpoints = [
-  { key: 'users', url: 'http://localhost:3000/api/users', label: 'Users' },
-  { key: 'bookings', url: 'http://localhost:3000/api/bookings', label: 'Bookings' },
-  { key: 'services', url: 'http://localhost:3000/api/services', label: 'Services' },
+  { key: 'users', url: `${apiUrl}/users`, label: 'Users' },
+  { key: 'bookings', url: `${apiUrl}/bookings`, label: 'Bookings' },
+  { key: 'services', url: `${apiUrl}/services`, label: 'Services' },
 ];
 
 function getUserStats(users) {

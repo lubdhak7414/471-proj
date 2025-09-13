@@ -43,11 +43,12 @@ const TechnicianDashboard = () => {
   //   _id: '689dbc1e7f68c9bd1ffb7cdd', //this is the user.id of the technicianid since in chatbox user.id is used//John Doe
   // }
   
+  const apiUrl = import.meta.env.VITE_API_URL;
 
   useEffect(() => {
     const fetchConversations = async () => {
       try {
-        const res = await axios.get(`http://localhost:3000/api/messages/${user.id}/conversations`);
+        const res = await axios.get(`${apiUrl}/messages/${user.id}/conversations`);
         setConversations(res.data);
       } catch (err) {
         console.error('Error fetching conversations:', err);
@@ -55,17 +56,13 @@ const TechnicianDashboard = () => {
         setLoadingConversations(false);
       }
     };
-    
     fetchConversations();
   }, [user.id]);
 
-
-
   useEffect(() => {
-    
     const fetchBookings = async () => {
       try {
-        const res = await axios.get(`http://localhost:3000/api/techDashboard/user/${user.id}/bookings?status=${filter}`
+        const res = await axios.get(`${apiUrl}/techDashboard/user/${user.id}/bookings?status=${filter}`
 
         );
         setBookings(res.data);
@@ -78,55 +75,47 @@ const TechnicianDashboard = () => {
     const fetchBookingCounts = async () => {
       try {
         const counts = {};
-        const statuses = ["pending", "accepted", "in-progress", "completed","cancelled"];
-        
+        const statuses = ["pending", "accepted", "in-progress", "completed", "cancelled"];
         for (const status of statuses) {
-          const res = await axios.get(`http://localhost:3000/api/techDashboard/user/${user.id}/bookings?status=${status}`);
+          const res = await axios.get(`${apiUrl}/techDashboard/user/${user.id}/bookings?status=${status}`);
           counts[status] = res.data.length;
         }
-        
         setBookingCounts(counts);
       } catch (err) {
         console.error("Failed to fetch booking counts:", err);
       }
     };
 
-
     fetchBookings();
     fetchBookingCounts();
-  }, [filter]);
+  }, [filter, user.id]);
 
   const handleCancelConfirm = async (bookingId, reason, status) => {
-      try {
-        const { data } = await axios.patch(
-          `http://localhost:3000/api/techDashboard/bookings/${bookingId}`,
-          { 
-            status: status, 
-            userId: user.id,
-            cancellationReason: reason 
-          }
-        );
-        
-        setBookings(bookings.map(booking => 
-          booking._id === bookingId ? data : booking
-        ));
-        
-        // Refresh counts after status change
-        const counts = { ...bookingCounts };
-        if (status === 'cancelled') {
-          counts[filter] = Math.max(0, counts[filter] - 1);
-          setBookingCounts(counts);
+    try {
+      const { data } = await axios.patch(
+        `${apiUrl}/techDashboard/bookings/${bookingId}`,
+        { 
+          status: status, 
+          userId: user.id,
+          cancellationReason: reason 
         }
-      } catch (err) {
-        console.error("Failed to update status:", err);
+      );
+      setBookings(bookings.map(booking => 
+        booking._id === bookingId ? data : booking
+      ));
+      // Refresh counts after status change
+      const counts = { ...bookingCounts };
+      if (status === 'cancelled') {
+        counts[filter] = Math.max(0, counts[filter] - 1);
+        setBookingCounts(counts);
       }
-    };
-
-
+    } catch (err) {
+      console.error("Failed to update status:", err);
+    }
+  };
 
   const handleStatusUpdate = async (bookingId, newStatus) => {
     if (newStatus === 'cancelled' || newStatus === 'rejected') {
-      // Show dialog to get cancellation reason
       setBookingToCancel(bookingId);
       setCancelStatus(newStatus);
       setShowCancelDialog(true);
@@ -134,16 +123,12 @@ const TechnicianDashboard = () => {
     }
     try {
       const { data } = await axios.patch(
-        `http://localhost:3000/api/techDashboard/bookings/${bookingId}`,
+        `${apiUrl}/techDashboard/bookings/${bookingId}`,
         { status: newStatus, userId: user.id }
       );
-      
       setBookings(bookings.map(booking => 
         booking._id === bookingId ? data : booking
       ));
-
-
-
     } catch (err) {
       console.error("Failed to update status:", err);
     }
@@ -326,11 +311,11 @@ const TechnicianDashboard = () => {
               <th style={{ padding: '12px', textAlign: 'left', borderBottom: '1px solid #ddd',color:'#000'}}>Name</th>
               <th style={{ padding: '12px', textAlign: 'center', borderBottom: '1px solid #ddd' ,color:'#000'}}>Address</th>
               <th style={{ padding: '12px', textAlign: 'left', borderBottom: '1px solid #ddd',color:'#000' }}>Phone</th>
-              <th style={{ padding: '12px', textAlign: 'left', borderBottom: '1px solid #ddd' ,color:'#000'}}>Date</th>
-              <th style={{ padding: '12px', textAlign: 'left', borderBottom: '1px solid #ddd',color:'#000' }}>Service</th>
-              <th style={{ padding: '12px', textAlign: 'center', borderBottom: '1px solid #ddd' ,color:'#000'}}>Issue</th>
-              <th style={{ padding: '12px', textAlign: 'left', borderBottom: '1px solid #ddd' ,color:'#000'}}>Urgency</th>
-              <th style={{ padding: '12px', textAlign: 'left', borderBottom: '1px solid #ddd' ,color:'#000'}}>Status</th>
+              <th style={{ padding: '12px' ,color:'#000', textAlign: 'left', borderBottom: '1px solid #ddd' }}>Date</th>
+              <th style={{ padding: '12px' ,color:'#000', textAlign: 'left', borderBottom: '1px solid #ddd' }}>Service</th>
+              <th style={{ padding: '12px' ,color:'#000', textAlign: 'center', borderBottom: '1px solid #ddd' }}>Issue</th>
+              <th style={{ padding: '12px' ,color:'#000', textAlign: 'left', borderBottom: '1px solid #ddd' }}>Urgency</th>
+              <th style={{ padding: '12px' ,color:'#000', textAlign: 'left', borderBottom: '1px solid #ddd' }}>Status</th>
               <th style={{ padding: '12px', textAlign: 'left', borderBottom: '1px solid #ddd',color:'#000' }}> {filter === "cancelled" ? "Cancel Reason" : filter === "completed" ? "Completed At" : "Action"}</th>
             </tr>
           </thead>

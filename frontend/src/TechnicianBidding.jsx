@@ -11,6 +11,8 @@ import { Badge } from '@/components/ui/badge';
 import { Calendar, Clock, MapPin, AlertCircle, DollarSign, User, Phone } from 'lucide-react';
 import { useNavigate } from 'react-router-dom';
 
+const apiUrl = import.meta.env.VITE_API_URL;
+
 export function TechnicianBiddingPage() {
   const { user, token, logout } = useAuth();
   const navigate = useNavigate();
@@ -35,7 +37,7 @@ export function TechnicianBiddingPage() {
       if (!user || !user.id) return;
       
       try {
-        const response = await fetch('http://localhost:3000/api/bookings/bidding-bookings/', {
+        const response = await fetch(`${apiUrl}/bookings/bidding-bookings/`, {
           headers: {
             Authorization: `Bearer ${token}`,
           },
@@ -137,7 +139,7 @@ export function TechnicianBiddingPage() {
     setError('');
 
     try {
-      const response = await fetch('http://localhost:3000/api/bids', {
+      const response = await fetch(`${apiUrl}/bids`, {
         method: 'POST',
         headers: {
           'Content-Type': 'application/json',

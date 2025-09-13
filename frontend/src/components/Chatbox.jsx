@@ -15,12 +15,12 @@ const ChatBox = ({ currentUser, otherUser, onClose }) => {
     ? generateConversationId(currentUser.id, otherUser._id)
     : null;
   
-
+  const apiUrl = import.meta.env.VITE_API_URL;
 
   useEffect(() => {
     const fetchMessages = async () => {
       try {
-        const res = await axios.get(`http://localhost:3000/api/messages/${currentUser.id}/${otherUser._id}`);
+        const res = await axios.get(`${apiUrl}/messages/${currentUser.id}/${otherUser._id}`);
         setMessages(res.data);
       } catch (err) {
         console.error('Error fetching messages:', err);
@@ -28,7 +28,7 @@ const ChatBox = ({ currentUser, otherUser, onClose }) => {
     };
     const markAsRead = async () => {
       try {
-        await axios.put(`http://localhost:3000/api/messages/markRead/${currentUser.id}/${otherUser._id}`);
+        await axios.put(`${apiUrl}/messages/markRead/${currentUser.id}/${otherUser._id}`);
       } catch (err) {
         console.error('Error marking messages as read:', err);
       }
@@ -36,10 +36,10 @@ const ChatBox = ({ currentUser, otherUser, onClose }) => {
 
     fetchMessages();
     markAsRead();
-    
+
     if (socket) {
       socket.emit('joinConversation', conversationId);
-      
+
       const handleReceiveMessage = (message) => {
         setMessages(prev => [...prev, message]);
         // If the new message is from the other user, mark it as read immediately if chat is open

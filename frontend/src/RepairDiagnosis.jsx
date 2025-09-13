@@ -17,6 +17,7 @@ export function RepairDiagnosis() {
   const [loading, setLoading] = useState(false);
   const [diagnosis, setDiagnosis] = useState(null);
   const [error, setError] = useState('');
+  const apiUrl = import.meta.env.VITE_API_URL; // <-- Add this line
 
   const handleImageUpload = (e) => {
     const files = Array.from(e.target.files);
@@ -60,7 +61,7 @@ export function RepairDiagnosis() {
       const payload = { description: description.trim() };
       if (images.length > 0) payload.images = images;
 
-      const response = await fetch('http://localhost:3000/api/diagnosis', {
+      const response = await fetch(`${apiUrl}/diagnosis`, { // <-- Use backticks and apiUrl variable
         method: 'POST',
         headers: { 'Content-Type': 'application/json' },
         body: JSON.stringify(payload),

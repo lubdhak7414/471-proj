@@ -8,6 +8,8 @@ import { Card, CardContent, CardDescription, CardFooter, CardHeader, CardTitle }
 import { Textarea } from '@/components/ui/textarea'; // For issue description
 import { useNavigate } from 'react-router-dom'; // add this line at the top
 
+const apiUrl = import.meta.env.VITE_API_URL;
+
 export function ServiceBooking() {
   const { user } = useAuth(); // Use the hook to get the user object
   const [userLoading, setUserLoading] = useState(true); // State to track loading of user
@@ -33,7 +35,7 @@ export function ServiceBooking() {
     // Fetch available services for the booking
     const fetchServices = async () => {
       try {
-        const response = await fetch('http://localhost:3000/api/services/');
+        const response = await fetch(`${apiUrl}/services/`);
         const data = await response.json();
         if (response.ok) {
           setServices(data.services);
@@ -78,14 +80,14 @@ export function ServiceBooking() {
     const technicianID = null; // No technician is assigned initially for bidding
 
     try {
-      const response = await fetch('http://localhost:3000/api/bookings/', {
+      const response = await fetch(`${apiUrl}/bookings/`, {
         method: 'POST',
         headers: {
           'Content-Type': 'application/json',
         },
         body: JSON.stringify({
           user: userID,
-          technician: technicianID,  // No technician assigned during bidding
+          technician: technicianID,
           service: selectedService,
           description: issueDescription,
           images,
@@ -94,15 +96,14 @@ export function ServiceBooking() {
           urgency,
           address,
           estimatedCost,
-          isBidding: true,  // Always enabled bidding
-          biddingDeadline: biddingDeadline || undefined // optional ISO datetime
+          isBidding: true,
+          biddingDeadline: biddingDeadline || undefined
         }),
       });
 
       const data = await response.json();
       if (!response.ok) throw new Error(data.message || 'Booking failed. Please try again.');
 
-      // Redirect to booking status page for the new booking
       navigate(`/booking-status/${data._id}`);
 
     } catch (err) {

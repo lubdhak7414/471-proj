@@ -22,12 +22,13 @@ const SearchTechnicians = () => {
   });
   const [results, setResults] = useState([]);
 
+  const apiUrl = import.meta.env.VITE_API_URL;
 
 
 
   const handleSearch = async (e) => {
     console.log('Clicked');
-    console.log('current',filters)
+    console.log('current', filters);
     e.preventDefault();
 
     try {
@@ -40,15 +41,15 @@ const SearchTechnicians = () => {
         name: filters.name || undefined,
       };
       const res = await axios.post(
-        "http://localhost:3000/api/technicians/search",
+        `${apiUrl}/technicians/search`, // <-- Use backticks and apiUrl variable
         cleanFilters,
         {
-        headers: {
-          'Content-Type': 'application/json'
+          headers: {
+            'Content-Type': 'application/json'
+          }
         }
-      }
       );
-      console.log(res.data.length)
+      console.log(res.data.length);
       setFilterCounts(res.data.length)
    
 

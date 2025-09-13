@@ -30,10 +30,12 @@ export function RepairService() {
   const [isDialogOpen, setIsDialogOpen] = useState(false);
   const [selectedService, setSelectedService] = useState(null);
 
+  const apiUrl = import.meta.env.VITE_API_URL;
+
   const fetchServices = useCallback(async () => {
     setLoading(true);
     try {
-      const response = await fetch('http://localhost:3000/api/services/');
+      const response = await fetch(`${apiUrl}/services`);
       const data = await response.json();
       if (data.services) {
         setServices(data.services);

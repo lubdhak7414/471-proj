@@ -7,6 +7,8 @@ import { Input } from '@/components/ui/input';
 import { Textarea } from '@/components/ui/textarea';
 import { Button } from '@/components/ui/button';
 
+const apiUrl = import.meta.env.VITE_API_URL;
+
 export function ReviewTechnician() {
   const { bookingId } = useParams();
   const navigate = useNavigate();
@@ -26,7 +28,7 @@ export function ReviewTechnician() {
   useEffect(() => {
     const fetchBooking = async () => {
       try {
-        const res = await fetch(`http://localhost:3000/api/bookings/single/${bookingId}`);
+        const res = await fetch(`${apiUrl}/bookings/single/${bookingId}`);
         const data = await res.json();
         if (!res.ok) throw new Error(data.message || 'Failed to fetch booking');
         setBooking(data);
@@ -42,7 +44,7 @@ export function ReviewTechnician() {
   const handleSubmit = async (e) => {
     e.preventDefault();
     try {
-      const res = await fetch('http://localhost:3000/api/reviews/', {
+      const res = await fetch(`${apiUrl}/reviews`, {
         method: 'POST',
         headers: { 'Content-Type': 'application/json' },
         body: JSON.stringify({

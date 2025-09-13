@@ -9,6 +9,7 @@ import { Label } from "@/components/ui/label";
 import { Checkbox } from "@/components/ui/checkbox";
 import { useAuth } from '@/context/AuthContext'; // Import AuthContext hook
 
+
 export function RegistrationForm({ onSwitchToLogin }) {
   const [isTechnician, setIsTechnician] = useState(false);
   const [formData, setFormData] = useState({
@@ -59,8 +60,9 @@ export function RegistrationForm({ onSwitchToLogin }) {
       picture: formData.picture || 'https://example.com/avatar.jpg', // Use the URL from the form, fallback to a default picture
     };
 
-    // Register user by sending a POST request to the API
-    const response = await fetch('http://localhost:3000/api/users', {
+    const apiUrl = import.meta.env.VITE_API_URL;
+
+    const response = await fetch(`${apiUrl}/users`, {
       method: 'POST',
       headers: {
         'Content-Type': 'application/json',
