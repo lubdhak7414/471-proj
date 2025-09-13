@@ -4,7 +4,6 @@ import { createBrowserRouter, RouterProvider } from 'react-router-dom';
 import LandingPage from './LandingPage.jsx';
 import NotFoundPage from './NotFoundPage.jsx';
 import { TechnicianOnboarding } from '../pages/TechnicianOnboarding.jsx';
-import { RepairService } from './RepairService.jsx';
 import { ServiceBooking } from './ServiceBooking.jsx';
 import { BookingStatus } from './BookingStatus.jsx';
 import { AuthProvider } from './context/AuthContext';
@@ -49,10 +48,6 @@ const router = createBrowserRouter([
   {
     element: <ProtectedRoutes allowedRoles={['user']} />, // Pass the allowed role
     children: [
-      {
-        path: '/repair-service',
-        element: <RepairService />,
-      },
       {
         path: '/service-booking',
         element: <ServiceBooking />,

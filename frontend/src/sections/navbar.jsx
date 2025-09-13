@@ -57,7 +57,6 @@ const Navbar = () => {
   if (isLoggedIn) {
     if (userRole === 'user') {
       navigationLinks = [
-        { href: '/repair-service', label: 'Repair Service' },
         { href: '/service-booking', label: 'Book Service' },
         { href: '/user-bookings', label: 'My Bookings' },
         { href: '/repair-diagnosis', label: 'Diagnosis' },
