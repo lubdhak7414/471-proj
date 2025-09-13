@@ -46,7 +46,6 @@ const router = createBrowserRouter([
     path: '/technician-onboarding/:userId',
     element: <TechnicianOnboarding />,
   },
-  // Use a layout route to protect multiple paths
   {
     element: <ProtectedRoutes allowedRoles={['user']} />, // Pass the allowed role
     children: [

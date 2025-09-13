@@ -51,6 +51,32 @@ const Navbar = () => {
   const { user, token, role, logout } = useAuth();
   const isLoggedIn = !!token && !!user;
   const userRole = role;
+
+  // Dynamically set navigation links based on user role
+  let navigationLinks = [];
+  if (isLoggedIn) {
+    if (userRole === 'user') {
+      navigationLinks = [
+        { href: '/repair-service', label: 'Repair Service' },
+        { href: '/service-booking', label: 'Book Service' },
+        { href: '/user-bookings', label: 'My Bookings' },
+        { href: '/repair-diagnosis', label: 'Diagnosis' },
+        { href: '/search', label: 'Search' },
+      ];
+    } else if (userRole === 'technician') {
+      navigationLinks = [
+        { href: '/dashboard', label: 'Dashboard' },
+        { href: '/technician-bidding', label: 'Bidding' },
+        { href: '/my-bids', label: 'My Bids' },
+      ];
+    } else if (userRole === 'admin') {
+      navigationLinks = [
+        { href: '/admin-dashboard', label: 'Admin Dashboard' },
+      ];
+    }
+  }
+  // If not logged in, navigationLinks will be empty
+
   const handleScroll = () => {
     setIsScrolled(window.scrollY > 0);
   };
@@ -83,13 +109,6 @@ const Navbar = () => {
     window.addEventListener('scroll', handleScroll);
     return () => window.removeEventListener('scroll', handleScroll);
   }, []);
-  const navigationLinks = [
-    { href: '#', label: 'Lorem' },
-    { href: '#', label: 'Ipsum' },
-    { href: '#', label: 'Blog' },
-    { href: '#', label: 'Contact' },
-    { href: '#', label: 'About' },
-  ];
   return (
     <div>
       <header
