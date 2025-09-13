@@ -1,6 +1,18 @@
-import { Button } from "@/components/ui/button"
+import { useEffect } from "react";
+import { Button } from "@/components/ui/button";
 
 function HeroSection() {
+  useEffect(() => {
+    // Dynamically load the dotlottie web component script
+    const script = document.createElement("script");
+    script.src = "https://unpkg.com/@lottiefiles/dotlottie-wc@0.6.2/dist/dotlottie-wc.js";
+    script.type = "module";
+    document.body.appendChild(script);
+    return () => {
+      document.body.removeChild(script);
+    };
+  }, []);
+
   return (
     <section className="w-full py-12">
       <div className="circlePosition w-full h-full bg-[#36a0d142] rounded-[100%] absolute -z-10 blur-[100px] flex justify-center items-center">
@@ -13,8 +25,8 @@ function HeroSection() {
               Revolutionizing Repair Services with Ease
             </h1>
             <p className="py-4 mx-auto max-w-[700px] text-gray-500 md:text-xl dark:text-gray-400">
-              Empower individuals and technicians with a seamless platform to book, track, and manage repair services. 
-              With an intuitive interface and trusted professionals, we make the repair process simple, transparent, and efficient. 
+              Empower individuals and technicians with a seamless platform to book, track, and manage repair services.
+              With an intuitive interface and trusted professionals, we make the repair process simple, transparent, and efficient.
               Join us in transforming the way repairs are done—bringing you closer to the service you need, with just a click.
             </p>
 
@@ -23,18 +35,22 @@ function HeroSection() {
               <Button>Get Started</Button>
             </div>
           </div>
-          
-          <img
-            alt="heroimage"
-            className="mx-auto"
-            height="500"
-            width="1200"
-            src="assets/heropic.png"
-          />
+
+          <div className="mx-auto flex justify-center items-center">
+            <div>
+              <dotlottie-wc
+                src="https://lottie.host/c22ca101-bb76-4648-b8bb-d4eb3db2e7c3/CC19uPCLYE.lottie"
+                style={{ width: "300px", height: "300px" }}
+                speed="1"
+                autoplay
+                loop
+              ></dotlottie-wc>
+            </div>
+          </div>
         </div>
       </div>
     </section>
-  )
+  );
 }
 
 export default HeroSection;

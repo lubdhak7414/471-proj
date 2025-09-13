@@ -115,7 +115,7 @@ export function RepairDiagnosis() {
               AI Repair Diagnosis
             </h1>
           </div>
-          <p className="text-lg text-gray-600 max-w-2xl mx-auto">
+          <p className="text-lg text-gray-300 max-w-2xl mx-auto">
             Get instant AI-powered diagnosis for your repair needs. Describe the issue or upload photos for accurate assessment.
           </p>
         </div>
